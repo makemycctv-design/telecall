@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Offline · TeleCRM</title>
+    <style>
+        body { margin: 0; font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0;
+               display: flex; min-height: 100vh; align-items: center; justify-content: center; text-align: center; }
+        .card { max-width: 420px; padding: 2rem; }
+        h1 { font-size: 1.5rem; margin-bottom: .5rem; }
+        p { color: #94a3b8; line-height: 1.5; }
+        .dot { width: 10px; height: 10px; border-radius: 999px; background: #f59e0b; display: inline-block; margin-right: 6px; }
+        button { margin-top: 1.5rem; background: #4f46e5; color: white; border: 0; padding: .7rem 1.4rem;
+                 border-radius: .6rem; font-size: 1rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <p><span class="dot"></span>You are offline</p>
+        <h1>No connection right now</h1>
+        <p>Recently viewed leads and tasks are still available. Any call logs or notes you save
+           will be queued and synced automatically when you are back online.</p>
+        <button onclick="location.reload()">Try again</button>
+    </div>
+</body>
+</html>
