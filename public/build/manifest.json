@@ -1,0 +1,200 @@
+{
+  "_AuthenticatedLayout-Pi_HNUnM.js": {
+    "file": "assets/AuthenticatedLayout-Pi_HNUnM.js",
+    "name": "AuthenticatedLayout",
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js"
+    ]
+  },
+  "_CartesianChart-J3XkcaMs.js": {
+    "file": "assets/CartesianChart-J3XkcaMs.js",
+    "name": "CartesianChart",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "_PipelineBar-D2PduAaI.js": {
+    "file": "assets/PipelineBar-D2PduAaI.js",
+    "name": "PipelineBar",
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js"
+    ]
+  },
+  "_ui-DNqNRsKa.js": {
+    "file": "assets/ui-DNqNRsKa.js",
+    "name": "ui",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-BZlo0nLg.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/Pages/Auth/Login.jsx": {
+    "file": "assets/Login-C0xfEvEH.js",
+    "name": "Login",
+    "src": "resources/js/Pages/Auth/Login.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js"
+    ]
+  },
+  "resources/js/Pages/Dashboard/Admin.jsx": {
+    "file": "assets/Admin-bi5BY-Qe.js",
+    "name": "Admin",
+    "src": "resources/js/Pages/Dashboard/Admin.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js",
+      "_PipelineBar-D2PduAaI.js"
+    ]
+  },
+  "resources/js/Pages/Dashboard/Manager.jsx": {
+    "file": "assets/Manager-DnseF-SY.js",
+    "name": "Manager",
+    "src": "resources/js/Pages/Dashboard/Manager.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js",
+      "_PipelineBar-D2PduAaI.js"
+    ]
+  },
+  "resources/js/Pages/Dashboard/Telecaller.jsx": {
+    "file": "assets/Telecaller-Cn_-ITKK.js",
+    "name": "Telecaller",
+    "src": "resources/js/Pages/Dashboard/Telecaller.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js",
+      "_PipelineBar-D2PduAaI.js"
+    ]
+  },
+  "resources/js/Pages/Leads/Import.jsx": {
+    "file": "assets/Import-D3e3XQdj.js",
+    "name": "Import",
+    "src": "resources/js/Pages/Leads/Import.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js"
+    ]
+  },
+  "resources/js/Pages/Leads/Index.jsx": {
+    "file": "assets/Index-DLiEdzYk.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Leads/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js"
+    ]
+  },
+  "resources/js/Pages/Leads/Show.jsx": {
+    "file": "assets/Show-B8r3CvzM.js",
+    "name": "Show",
+    "src": "resources/js/Pages/Leads/Show.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js"
+    ]
+  },
+  "resources/js/Pages/Notifications/Index.jsx": {
+    "file": "assets/Index-8I5phCwh.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Notifications/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js"
+    ]
+  },
+  "resources/js/Pages/Reports/Index.jsx": {
+    "file": "assets/Index-EgwJC1tZ.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Reports/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_CartesianChart-J3XkcaMs.js",
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js"
+    ]
+  },
+  "resources/js/Pages/Reports/Performance.jsx": {
+    "file": "assets/Performance-CheIghvT.js",
+    "name": "Performance",
+    "src": "resources/js/Pages/Reports/Performance.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_CartesianChart-J3XkcaMs.js",
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js"
+    ]
+  },
+  "resources/js/Pages/Staff/Index.jsx": {
+    "file": "assets/Index-CSN7IFCj.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Staff/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js"
+    ]
+  },
+  "resources/js/Pages/Tasks/Index.jsx": {
+    "file": "assets/Index-Cd5rcsCd.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Tasks/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-DNqNRsKa.js",
+      "_AuthenticatedLayout-Pi_HNUnM.js"
+    ]
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-DiMxsaWS.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/Pages/Auth/Login.jsx",
+      "resources/js/Pages/Dashboard/Admin.jsx",
+      "resources/js/Pages/Dashboard/Manager.jsx",
+      "resources/js/Pages/Dashboard/Telecaller.jsx",
+      "resources/js/Pages/Leads/Import.jsx",
+      "resources/js/Pages/Leads/Index.jsx",
+      "resources/js/Pages/Leads/Show.jsx",
+      "resources/js/Pages/Notifications/Index.jsx",
+      "resources/js/Pages/Reports/Index.jsx",
+      "resources/js/Pages/Reports/Performance.jsx",
+      "resources/js/Pages/Staff/Index.jsx",
+      "resources/js/Pages/Tasks/Index.jsx"
+    ],
+    "css": [
+      "assets/app-BZlo0nLg.css"
+    ]
+  }
+}
