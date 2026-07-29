@@ -24,33 +24,32 @@ cd ~
 git clone https://github.com/makemycctv-design/telecall.git telecall_src
 ```
 
-You have two ways to satisfy Laravel's requirement that the web server points at
-the `public/` directory.
+### Single-folder deployment (document root stays as the domain folder)
 
-### Option A — point the document root at `public` (recommended)
-In cPanel → **Domains** → your domain → set **Document Root** to:
-```
-/home/<cpanel_user>/telecall.nokkoo.in/public
-```
-Then place the app at `/home/<cpanel_user>/telecall.nokkoo.in`:
+Put **all** the app files directly inside `/home/<cpanel_user>/telecall.nokkoo.in`
+and leave the document root unchanged. The repo ships a root `.htaccess` that
+internally forwards every request into Laravel's `public/` front controller, so
+you do **not** need to switch the doc root to `/public`.
+
 ```bash
-mv ~/telecall_src/* ~/telecall_src/.[!.]* /home/<cpanel_user>/telecall.nokkoo.in/
+# Move everything (including dotfiles like .htaccess and .env.example) in.
+shopt -s dotglob
+mv ~/telecall_src/* /home/<cpanel_user>/telecall.nokkoo.in/
+shopt -u dotglob
+rmdir ~/telecall_src
+
+# Confirm the forwarding .htaccess and the app are in place
+cd /home/<cpanel_user>/telecall.nokkoo.in
+ls -la .htaccess artisan public/index.php
 ```
 
-### Option B — doc root is fixed at the domain folder
-Keep the Laravel app in a sibling folder and expose only `public`:
-```bash
-mkdir -p ~/telecall_app
-mv ~/telecall_src/* ~/telecall_src/.[!.]* ~/telecall_app/
-# Copy the public/ contents into the (fixed) document root:
-cp -r ~/telecall_app/public/* /home/<cpanel_user>/telecall.nokkoo.in/
-```
-Then edit `/home/<cpanel_user>/telecall.nokkoo.in/index.php` so the two
-`require`/`$app` paths point at `../telecall_app` instead of `..`:
-```php
-require __DIR__.'/../telecall_app/vendor/autoload.php';
-$app = require_once __DIR__.'/../telecall_app/bootstrap/app.php';
-```
+How it works / why it's safe:
+- A request to `/` or `/leads` is rewritten to `public/...` → `public/index.php`.
+- A request to an app file such as `/.env`, `/app/...`, `/storage/...` is
+  rewritten to `/public/.env` etc., which does not exist, so it is never served.
+
+> If the domain folder already contains a default `index.html` from cPanel,
+> delete it first (`rm -f index.html`) so it doesn't shadow the app.
 
 ---
 

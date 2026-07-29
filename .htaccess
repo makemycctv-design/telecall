@@ -1,0 +1,19 @@
+# TeleCRM — single-folder cPanel deployment.
+#
+# Keeps the document root as this folder (no need to change it to /public).
+# All requests are internally forwarded into Laravel's public/ front controller.
+# Side effect: requests for app files (e.g. /.env, /app, /storage) are rewritten
+# to /public/... which does not exist, so they are never served.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Avoid an internal-redirect loop once the path already points at /public.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Belt-and-suspenders: hard-block direct access to sensitive dotfiles.
+<FilesMatch "^\.(env|git|gitignore|gitattributes|editorconfig|npmrc)$">
+    Require all denied
+</FilesMatch>
