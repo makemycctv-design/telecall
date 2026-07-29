@@ -8,6 +8,7 @@ use App\Http\Controllers\LeadImportController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\PushSubscriptionController;
+use App\Http\Controllers\PwaController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\TaskController;
@@ -23,26 +24,14 @@ use Illuminate\Support\Facades\Route;
 | PWA assets (public, served from the site root for full SW scope)
 |--------------------------------------------------------------------------
 */
-Route::get('sw.js', function () {
-    $path = public_path('build/sw.js');
-    abort_unless(file_exists($path), 404);
+Route::get('sw.js', [PwaController::class, 'serviceWorker'])->name('pwa.sw');
+Route::get('manifest.webmanifest', [PwaController::class, 'manifest'])->name('pwa.manifest');
 
-    return response()->file($path, [
-        'Content-Type' => 'application/javascript',
-        'Service-Worker-Allowed' => '/',
-        'Cache-Control' => 'no-cache',
-    ]);
-})->name('pwa.sw');
-
-Route::get('manifest.webmanifest', function () {
-    $path = public_path('build/manifest.webmanifest');
-    abort_unless(file_exists($path), 404);
-
-    return response()->file($path, ['Content-Type' => 'application/manifest+json']);
-})->name('pwa.manifest');
+// Landing: auth users reach the dashboard; guests are bounced to login by the
+// auth middleware. Route::redirect is cacheable (uses RedirectController).
+Route::redirect('/', '/dashboard')->name('home');
 
 Route::middleware('guest')->group(function () {
-    Route::get('/', fn () => redirect()->route('login'));
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 });
@@ -94,7 +83,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:manager,admin')->group(function () {
         Route::patch('leads/{lead}/assign', [LeadController::class, 'assign'])->name('leads.assign');
 
-        Route::get('import', fn () => \Inertia\Inertia::render('Leads/Import'))->name('import.create');
+        Route::get('import', [LeadImportController::class, 'create'])->name('import.create');
         Route::post('import', [LeadImportController::class, 'store'])->name('import.store');
         Route::get('import/template', [LeadImportController::class, 'template'])->name('import.template');
 

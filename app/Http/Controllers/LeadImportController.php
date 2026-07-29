@@ -13,6 +13,12 @@ class LeadImportController extends Controller
 {
     public function __construct(private LeadImportService $service) {}
 
+    /** Show the CSV import screen. */
+    public function create(): \Inertia\Response
+    {
+        return \Inertia\Inertia::render('Leads/Import');
+    }
+
     public function store(ImportLeadsRequest $request): RedirectResponse
     {
         $path = $request->file('file')->store('imports');

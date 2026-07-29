@@ -46,20 +46,27 @@ class MetricsService
             ->whereDate('converted_at', $date)
             ->count();
 
-        return DailyStaffMetric::updateOrCreate(
-            ['user_id' => $user->id, 'metric_date' => $date->toDateString()],
-            [
-                'calls_made' => $callsMade,
-                'calls_connected' => $callsConnected,
-                'talk_time_seconds' => $talkTime,
-                'follow_ups_completed' => $followUpsCompleted,
-                'tasks_completed' => $tasksCompleted,
-                'tasks_overdue' => $tasksOverdue,
-                'leads_interested' => $leadsInterested,
-                'leads_converted' => $leadsConverted,
-                'task_time_seconds' => $taskTime,
-            ],
-        );
+        // Date-safe upsert: match on the calendar date via whereDate so the
+        // stored time component (SQLite) or DATE column (MySQL) can't cause a
+        // duplicate on re-aggregation (hourly cron / re-seed).
+        $metric = DailyStaffMetric::where('user_id', $user->id)
+            ->whereDate('metric_date', $date)
+            ->first()
+            ?? new DailyStaffMetric(['user_id' => $user->id, 'metric_date' => $date->toDateString()]);
+
+        $metric->fill([
+            'calls_made' => $callsMade,
+            'calls_connected' => $callsConnected,
+            'talk_time_seconds' => $talkTime,
+            'follow_ups_completed' => $followUpsCompleted,
+            'tasks_completed' => $tasksCompleted,
+            'tasks_overdue' => $tasksOverdue,
+            'leads_interested' => $leadsInterested,
+            'leads_converted' => $leadsConverted,
+            'task_time_seconds' => $taskTime,
+        ])->save();
+
+        return $metric;
     }
 
     /**

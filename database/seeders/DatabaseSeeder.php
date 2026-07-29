@@ -19,53 +19,76 @@ use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Idempotent seeder — safe to run multiple times.
+     *
+     * Core data (roles, three demo login users, sources, tags) is always
+     * created and needs no faker, so it runs fine on production
+     * (`composer install --no-dev`). The large volume of demo leads/calls/tasks
+     * only runs when faker is available (i.e. dev with dev-dependencies).
+     */
     public function run(): void
     {
-        // ---- Roles -------------------------------------------------------
-        $roles = collect([
-            ['slug' => RoleType::Admin->value, 'name' => 'Administrator', 'description' => 'Full system access'],
-            ['slug' => RoleType::Manager->value, 'name' => 'Manager', 'description' => 'Team management & reporting'],
-            ['slug' => RoleType::Telecaller->value, 'name' => 'Telecaller', 'description' => 'Lead calling & tasks'],
-        ])->mapWithKeys(fn ($r) => [$r['slug'] => Role::create($r)]);
+        // ---- Roles (idempotent) -----------------------------------------
+        foreach ([
+            [RoleType::Admin->value, 'Administrator', 'Full system access'],
+            [RoleType::Manager->value, 'Manager', 'Team management & reporting'],
+            [RoleType::Telecaller->value, 'Telecaller', 'Lead calling & tasks'],
+        ] as [$slug, $name, $desc]) {
+            Role::firstOrCreate(['slug' => $slug], ['name' => $name, 'description' => $desc]);
+        }
 
-        // ---- Demo users --------------------------------------------------
-        $admin = $this->makeUser('Admin User', 'admin@telecrm.test');
-        $admin->roles()->attach($roles[RoleType::Admin->value]);
+        // ---- Demo login users (idempotent) ------------------------------
+        $admin = $this->ensureUser('Admin User', 'admin@telecrm.test', RoleType::Admin);
+        $manager = $this->ensureUser('Manager Mary', 'manager@telecrm.test', RoleType::Manager);
+        $primaryCaller = $this->ensureUser('Telecaller Tom', 'telecaller@telecrm.test', RoleType::Telecaller, $manager->id);
 
-        $manager = $this->makeUser('Manager Mary', 'manager@telecrm.test');
-        $manager->roles()->attach($roles[RoleType::Manager->value]);
+        // ---- Lookup data (idempotent) -----------------------------------
+        foreach (['Website', 'Facebook', 'Referral', 'Cold Call', 'LinkedIn'] as $name) {
+            LeadSource::firstOrCreate(['slug' => Str::slug($name)], ['name' => $name, 'is_active' => true]);
+        }
+        foreach ([['Hot', 'rose'], ['Enterprise', 'violet'], ['SMB', 'blue'], ['Renewal', 'emerald']] as [$name, $color]) {
+            LeadTag::firstOrCreate(['slug' => Str::slug($name)], ['name' => $name, 'color' => $color]);
+        }
 
-        // Named demo telecaller + a few generated ones, all under the manager.
-        $primaryCaller = $this->makeUser('Telecaller Tom', 'telecaller@telecrm.test', $manager->id);
-        $primaryCaller->roles()->attach($roles[RoleType::Telecaller->value]);
+        // ---- Bulk demo data (dev only — requires faker) -----------------
+        if (function_exists('fake')) {
+            $this->seedDemoData($manager, $primaryCaller);
+        } else {
+            $this->command?->warn('faker unavailable (--no-dev): skipped bulk demo leads. Core data seeded.');
+        }
+
+        app(MetricsService::class)->aggregateAllForDate(Carbon::today());
+
+        $this->command?->info('Seeded roles + demo users.');
+        $this->command?->info('Login: admin@telecrm.test / manager@telecrm.test / telecaller@telecrm.test (password: "password")');
+    }
+
+    private function seedDemoData(User $manager, User $primaryCaller): void
+    {
+        // Only generate the big demo set once.
+        if (Lead::count() > 0) {
+            return;
+        }
 
         $telecallers = collect([$primaryCaller]);
         foreach (range(1, 4) as $i) {
             $u = User::factory()->create(['manager_id' => $manager->id]);
-            $u->roles()->attach($roles[RoleType::Telecaller->value]);
+            $u->roles()->syncWithoutDetaching(Role::where('slug', RoleType::Telecaller->value)->pluck('id'));
             $telecallers->push($u);
         }
 
-        // ---- Lookup data -------------------------------------------------
-        $sources = collect(['Website', 'Facebook', 'Referral', 'Cold Call', 'LinkedIn'])
-            ->map(fn ($name) => LeadSource::create(['name' => $name, 'slug' => Str::slug($name), 'is_active' => true]));
+        $sources = LeadSource::pluck('id');
+        $tags = LeadTag::pluck('id');
 
-        $tags = collect(['Hot', 'Enterprise', 'SMB', 'Renewal'])
-            ->map(fn ($name, $i) => LeadTag::create([
-                'name' => $name,
-                'slug' => Str::slug($name),
-                'color' => ['rose', 'violet', 'blue', 'emerald'][$i],
-            ]));
-
-        // ---- Leads + activity -------------------------------------------
         Lead::factory(120)->make()->each(function (Lead $lead) use ($telecallers, $sources, $tags, $manager) {
             $assignee = $telecallers->random();
             $lead->assigned_to = $assignee->id;
             $lead->created_by = $manager->id;
-            $lead->lead_source_id = $sources->random()->id;
+            $lead->lead_source_id = $sources->random();
             $lead->save();
 
-            $lead->tags()->attach($tags->random(rand(0, 2))->pluck('id')->all());
+            $lead->tags()->attach($tags->random(rand(0, 2))->all());
 
             LeadStatusHistory::create([
                 'lead_id' => $lead->id,
@@ -75,7 +98,6 @@ class DatabaseSeeder extends Seeder
                 'note' => 'Seeded',
             ]);
 
-            // A couple of calls + a task for a subset of leads.
             if (rand(0, 1)) {
                 CallLog::factory(rand(1, 3))->make()->each(function (CallLog $call) use ($lead, $assignee) {
                     $call->lead_id = $lead->id;
@@ -92,24 +114,23 @@ class DatabaseSeeder extends Seeder
                 ])->save();
             }
         });
-
-        // ---- Pre-aggregate today's metrics for the dashboards -----------
-        $metrics = app(MetricsService::class);
-        $metrics->aggregateAllForDate(Carbon::today());
-
-        $this->command?->info('Seeded roles, 7 users, 120 leads, calls, tasks and metrics.');
-        $this->command?->info('Login: admin@telecrm.test / manager@telecrm.test / telecaller@telecrm.test (password: "password")');
     }
 
-    private function makeUser(string $name, string $email, ?int $managerId = null): User
+    private function ensureUser(string $name, string $email, RoleType $role, ?int $managerId = null): User
     {
-        return User::create([
-            'name' => $name,
-            'email' => $email,
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-            'manager_id' => $managerId,
-            'is_active' => true,
-        ]);
+        $user = User::firstOrCreate(
+            ['email' => $email],
+            [
+                'name' => $name,
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'manager_id' => $managerId,
+                'is_active' => true,
+            ],
+        );
+
+        $user->roles()->syncWithoutDetaching(Role::where('slug', $role->value)->pluck('id'));
+
+        return $user;
     }
 }
