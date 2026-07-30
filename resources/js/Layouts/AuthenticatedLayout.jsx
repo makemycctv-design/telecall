@@ -7,21 +7,23 @@ import { Avatar } from '@/Components/ui';
 
 // Navigation is filtered by the user's roles. `roles` here are role slugs.
 const NAV = [
-    { label: 'Dashboard', href: '/dashboard', route: 'dashboard', icon: '🏠', roles: ['admin', 'manager', 'telecaller'] },
-    { label: 'Leads', href: '/leads', route: 'leads.index', icon: '👥', roles: ['admin', 'manager', 'telecaller'] },
-    { label: 'Tasks', href: '/tasks', route: 'tasks.index', icon: '✅', roles: ['admin', 'manager', 'telecaller'] },
-    { label: 'Reports', href: '/reports', route: 'reports.index', icon: '📊', roles: ['admin', 'manager'] },
-    { label: 'Performance', href: '/performance', route: 'performance.index', icon: '📈', roles: ['admin', 'manager'] },
-    { label: 'Import', href: '/import', route: 'import.create', icon: '📥', roles: ['admin', 'manager'] },
-    { label: 'Staff', href: '/staff', route: 'staff.index', icon: '⚙️', roles: ['admin'] },
+    { label: 'Dashboard', href: '/dashboard', icon: '🏠', roles: ['admin', 'manager', 'telecaller', 'executor'] },
+    { label: 'Leads', href: '/leads', icon: '👥', roles: ['admin', 'manager', 'telecaller'] },
+    { label: 'Tasks', href: '/tasks', icon: '✅', roles: ['admin', 'manager', 'telecaller'] },
+    { label: 'Projects', href: '/projects', icon: '🗂️', roles: ['admin', 'manager', 'executor'] },
+    { label: 'Reports', href: '/reports', icon: '📊', roles: ['admin', 'manager'] },
+    { label: 'Performance', href: '/performance', icon: '📈', roles: ['admin', 'manager'] },
+    { label: 'Import', href: '/import', icon: '📥', roles: ['admin', 'manager'] },
+    { label: 'Staff', href: '/staff', icon: '⚙️', roles: ['admin'] },
 ];
 
-// Compact set for the mobile bottom bar (telecaller-first).
+// Mobile bottom bar: a compact, role-aware subset.
 const MOBILE_NAV = [
-    { label: 'Home', href: '/dashboard', icon: '🏠' },
-    { label: 'Leads', href: '/leads', icon: '👥' },
-    { label: 'Tasks', href: '/tasks', icon: '✅' },
-    { label: 'Alerts', href: '/notifications', icon: '🔔' },
+    { label: 'Home', href: '/dashboard', icon: '🏠', roles: ['admin', 'manager', 'telecaller', 'executor'] },
+    { label: 'Leads', href: '/leads', icon: '👥', roles: ['admin', 'manager', 'telecaller'] },
+    { label: 'Tasks', href: '/tasks', icon: '✅', roles: ['admin', 'manager', 'telecaller'] },
+    { label: 'Projects', href: '/projects', icon: '🗂️', roles: ['executor'] },
+    { label: 'Alerts', href: '/notifications', icon: '🔔', roles: ['admin', 'manager', 'telecaller', 'executor'] },
 ];
 
 function useCurrentPath() {
@@ -39,6 +41,8 @@ export default function AuthenticatedLayout({ header, children }) {
     const [toast, setToast] = useState(null);
 
     const items = NAV.filter((i) => i.roles.some((r) => roles.includes(r)));
+    // Keep the mobile bar to at most 5 items for layout.
+    const mobileItems = MOBILE_NAV.filter((i) => i.roles.some((r) => roles.includes(r))).slice(0, 5);
 
     useEffect(() => {
         if (flash.success || flash.error) {
@@ -124,7 +128,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
             {/* Mobile bottom navigation */}
             <nav className="pb-safe fixed inset-x-0 bottom-0 z-30 flex border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:hidden">
-                {MOBILE_NAV.map((item) => (
+                {mobileItems.map((item) => (
                     <Link
                         key={item.href}
                         href={item.href}

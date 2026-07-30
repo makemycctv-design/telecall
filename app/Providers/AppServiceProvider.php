@@ -4,11 +4,13 @@ namespace App\Providers;
 
 use App\Models\CallLog;
 use App\Models\Lead;
+use App\Models\Project;
 use App\Models\Task;
 use App\Notifications\Channels\AppDatabaseChannel;
 use App\Notifications\Channels\WebPushChannel;
 use App\Policies\CallLogPolicy;
 use App\Policies\LeadPolicy;
+use App\Policies\ProjectPolicy;
 use App\Policies\TaskPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Lead::class, LeadPolicy::class);
         Gate::policy(Task::class, TaskPolicy::class);
         Gate::policy(CallLog::class, CallLogPolicy::class);
+        Gate::policy(Project::class, ProjectPolicy::class);
 
         // Custom notification channels resolved by class-name via container.
         // (Referencing the channel FQCN in a notification's via() is supported

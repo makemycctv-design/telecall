@@ -7,6 +7,7 @@ enum RoleType: string
     case Admin = 'admin';
     case Manager = 'manager';
     case Telecaller = 'telecaller';
+    case Executor = 'executor';
 
     public function label(): string
     {
@@ -14,6 +15,7 @@ enum RoleType: string
             self::Admin => 'Administrator',
             self::Manager => 'Manager',
             self::Telecaller => 'Telecaller',
+            self::Executor => 'Executor',
         };
     }
 

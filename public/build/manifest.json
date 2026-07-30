@@ -1,36 +1,44 @@
 {
-  "_AuthenticatedLayout-Pi_HNUnM.js": {
-    "file": "assets/AuthenticatedLayout-Pi_HNUnM.js",
+  "_AssignProjectModal-BYQUZVGN.js": {
+    "file": "assets/AssignProjectModal-BYQUZVGN.js",
+    "name": "AssignProjectModal",
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-vltfGR7O.js"
+    ]
+  },
+  "_AuthenticatedLayout-CVjIGYiz.js": {
+    "file": "assets/AuthenticatedLayout-CVjIGYiz.js",
     "name": "AuthenticatedLayout",
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js"
+      "_ui-vltfGR7O.js"
     ]
   },
-  "_CartesianChart-J3XkcaMs.js": {
-    "file": "assets/CartesianChart-J3XkcaMs.js",
+  "_CartesianChart-DbXbOK6k.js": {
+    "file": "assets/CartesianChart-DbXbOK6k.js",
     "name": "CartesianChart",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_PipelineBar-D2PduAaI.js": {
-    "file": "assets/PipelineBar-D2PduAaI.js",
+  "_PipelineBar-BLaECEaf.js": {
+    "file": "assets/PipelineBar-BLaECEaf.js",
     "name": "PipelineBar",
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js"
+      "_ui-vltfGR7O.js"
     ]
   },
-  "_ui-DNqNRsKa.js": {
-    "file": "assets/ui-DNqNRsKa.js",
+  "_ui-vltfGR7O.js": {
+    "file": "assets/ui-vltfGR7O.js",
     "name": "ui",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-BZlo0nLg.css",
+    "file": "assets/app-DGOyIBk4.css",
     "name": "app",
     "names": [
       "app.css"
@@ -39,162 +47,212 @@
     "isEntry": true
   },
   "resources/js/Pages/Auth/Login.jsx": {
-    "file": "assets/Login-C0xfEvEH.js",
+    "file": "assets/Login-5x-dghBL.js",
     "name": "Login",
     "src": "resources/js/Pages/Auth/Login.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js"
+      "_ui-vltfGR7O.js"
     ]
   },
   "resources/js/Pages/Dashboard/Admin.jsx": {
-    "file": "assets/Admin-bi5BY-Qe.js",
+    "file": "assets/Admin-Cpn-NJLf.js",
     "name": "Admin",
     "src": "resources/js/Pages/Dashboard/Admin.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js",
-      "_PipelineBar-D2PduAaI.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js",
+      "_PipelineBar-BLaECEaf.js"
+    ]
+  },
+  "resources/js/Pages/Dashboard/Executor.jsx": {
+    "file": "assets/Executor-BF6E-6iY.js",
+    "name": "Executor",
+    "src": "resources/js/Pages/Dashboard/Executor.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
     ]
   },
   "resources/js/Pages/Dashboard/Manager.jsx": {
-    "file": "assets/Manager-DnseF-SY.js",
+    "file": "assets/Manager-BJZJu1Fj.js",
     "name": "Manager",
     "src": "resources/js/Pages/Dashboard/Manager.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js",
-      "_PipelineBar-D2PduAaI.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js",
+      "_PipelineBar-BLaECEaf.js",
+      "_AssignProjectModal-BYQUZVGN.js"
     ]
   },
   "resources/js/Pages/Dashboard/Telecaller.jsx": {
-    "file": "assets/Telecaller-Cn_-ITKK.js",
+    "file": "assets/Telecaller-XBmYa-7r.js",
     "name": "Telecaller",
     "src": "resources/js/Pages/Dashboard/Telecaller.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js",
-      "_PipelineBar-D2PduAaI.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js",
+      "_PipelineBar-BLaECEaf.js"
     ]
   },
   "resources/js/Pages/Leads/Import.jsx": {
-    "file": "assets/Import-D3e3XQdj.js",
+    "file": "assets/Import-BjnMWqN5.js",
     "name": "Import",
     "src": "resources/js/Pages/Leads/Import.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
     ]
   },
   "resources/js/Pages/Leads/Index.jsx": {
-    "file": "assets/Index-DLiEdzYk.js",
+    "file": "assets/Index-CSx3tjMy.js",
     "name": "Index",
     "src": "resources/js/Pages/Leads/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
     ]
   },
   "resources/js/Pages/Leads/Show.jsx": {
-    "file": "assets/Show-B8r3CvzM.js",
+    "file": "assets/Show-Ds4NR0IQ.js",
     "name": "Show",
     "src": "resources/js/Pages/Leads/Show.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
     ]
   },
   "resources/js/Pages/Notifications/Index.jsx": {
-    "file": "assets/Index-8I5phCwh.js",
+    "file": "assets/Index-D9Sd4Jx7.js",
     "name": "Index",
     "src": "resources/js/Pages/Notifications/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
+    ]
+  },
+  "resources/js/Pages/Projects/Index.jsx": {
+    "file": "assets/Index-CFciKZem.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Projects/Index.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
+    ]
+  },
+  "resources/js/Pages/Projects/Manage.jsx": {
+    "file": "assets/Manage-Pk74BlYy.js",
+    "name": "Manage",
+    "src": "resources/js/Pages/Projects/Manage.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js",
+      "_AssignProjectModal-BYQUZVGN.js"
+    ]
+  },
+  "resources/js/Pages/Projects/Show.jsx": {
+    "file": "assets/Show-CqvvrlHA.js",
+    "name": "Show",
+    "src": "resources/js/Pages/Projects/Show.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
     ]
   },
   "resources/js/Pages/Reports/Index.jsx": {
-    "file": "assets/Index-EgwJC1tZ.js",
+    "file": "assets/Index-DWaT12qe.js",
     "name": "Index",
     "src": "resources/js/Pages/Reports/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
-      "_CartesianChart-J3XkcaMs.js",
+      "_CartesianChart-DbXbOK6k.js",
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
     ]
   },
   "resources/js/Pages/Reports/Performance.jsx": {
-    "file": "assets/Performance-CheIghvT.js",
+    "file": "assets/Performance-BfTb273S.js",
     "name": "Performance",
     "src": "resources/js/Pages/Reports/Performance.jsx",
     "isDynamicEntry": true,
     "imports": [
-      "_CartesianChart-J3XkcaMs.js",
+      "_CartesianChart-DbXbOK6k.js",
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
     ]
   },
   "resources/js/Pages/Staff/Index.jsx": {
-    "file": "assets/Index-CSN7IFCj.js",
+    "file": "assets/Index-D5tQlJy-.js",
     "name": "Index",
     "src": "resources/js/Pages/Staff/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
     ]
   },
   "resources/js/Pages/Tasks/Index.jsx": {
-    "file": "assets/Index-Cd5rcsCd.js",
+    "file": "assets/Index-D2dAxy9u.js",
     "name": "Index",
     "src": "resources/js/Pages/Tasks/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_ui-DNqNRsKa.js",
-      "_AuthenticatedLayout-Pi_HNUnM.js"
+      "_ui-vltfGR7O.js",
+      "_AuthenticatedLayout-CVjIGYiz.js"
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-DiMxsaWS.js",
+    "file": "assets/app-BEprKn6V.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
     "dynamicImports": [
       "resources/js/Pages/Auth/Login.jsx",
       "resources/js/Pages/Dashboard/Admin.jsx",
+      "resources/js/Pages/Dashboard/Executor.jsx",
       "resources/js/Pages/Dashboard/Manager.jsx",
       "resources/js/Pages/Dashboard/Telecaller.jsx",
       "resources/js/Pages/Leads/Import.jsx",
       "resources/js/Pages/Leads/Index.jsx",
       "resources/js/Pages/Leads/Show.jsx",
       "resources/js/Pages/Notifications/Index.jsx",
+      "resources/js/Pages/Projects/Index.jsx",
+      "resources/js/Pages/Projects/Manage.jsx",
+      "resources/js/Pages/Projects/Show.jsx",
       "resources/js/Pages/Reports/Index.jsx",
       "resources/js/Pages/Reports/Performance.jsx",
       "resources/js/Pages/Staff/Index.jsx",
       "resources/js/Pages/Tasks/Index.jsx"
     ],
     "css": [
-      "assets/app-BZlo0nLg.css"
+      "assets/app-DGOyIBk4.css"
     ]
   }
 }

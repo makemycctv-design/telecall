@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\LeadStatus;
+use App\Enums\ProjectStatus;
 use App\Models\CallLog;
 use App\Models\DailyStaffMetric;
 use App\Models\Lead;
+use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,6 +23,7 @@ class DashboardController extends Controller
         return match (true) {
             $user->isAdmin() => $this->adminDashboard($user),
             $user->isManager() => $this->managerDashboard($user),
+            $user->isExecutor() => $this->executorDashboard($user),
             default => $this->telecallerDashboard($user),
         };
     }
@@ -60,6 +62,36 @@ class DashboardController extends Controller
             'pipeline' => $this->pipelineSummary(clone $leadQuery),
             'leaderboard' => $this->leaderboard($teamIds->all()),
             'recent_activity' => $this->recentActivity(clone $leadQuery),
+            // Converted leads from the team that still need handoff to an executor.
+            'converted_pending' => (clone $leadQuery)
+                ->convertedAwaitingHandoff()
+                ->with(['assignee:id,name', 'source:id,name'])
+                ->latest('converted_at')
+                ->limit(10)
+                ->get(['id', 'name', 'phone', 'company', 'deal_value', 'assigned_to', 'lead_source_id', 'converted_at']),
+            'executors' => User::executors()->active()->get(['id', 'name']),
+        ]);
+    }
+
+    protected function executorDashboard(User $user): Response
+    {
+        $base = Project::where('assigned_to', $user->id);
+
+        return Inertia::render('Dashboard/Executor', [
+            'kpis' => [
+                'active' => (clone $base)->open()->count(),
+                'in_progress' => (clone $base)->where('status', ProjectStatus::InProgress->value)->count(),
+                'overdue' => (clone $base)->overdue()->count(),
+                'completed' => (clone $base)->where('status', ProjectStatus::Completed->value)->count(),
+                'due_soon' => (clone $base)->open()->whereNotNull('deadline')
+                    ->whereBetween('deadline', [today(), today()->addDays(3)])->count(),
+                'logged_today' => $user->projectLogs()->whereDate('log_date', today())->count(),
+            ],
+            'active_projects' => (clone $base)->open()
+                ->with('lead:id,name,company')
+                ->orderByRaw('deadline IS NULL, deadline asc')
+                ->limit(8)
+                ->get(),
         ]);
     }
 

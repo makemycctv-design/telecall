@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             [RoleType::Admin->value, 'Administrator', 'Full system access'],
             [RoleType::Manager->value, 'Manager', 'Team management & reporting'],
             [RoleType::Telecaller->value, 'Telecaller', 'Lead calling & tasks'],
+            [RoleType::Executor->value, 'Executor', 'Executes converted-lead projects'],
         ] as [$slug, $name, $desc]) {
             Role::firstOrCreate(['slug' => $slug], ['name' => $name, 'description' => $desc]);
         }
@@ -42,6 +43,7 @@ class DatabaseSeeder extends Seeder
         $admin = $this->ensureUser('Admin User', 'admin@telecrm.test', RoleType::Admin);
         $manager = $this->ensureUser('Manager Mary', 'manager@telecrm.test', RoleType::Manager);
         $primaryCaller = $this->ensureUser('Telecaller Tom', 'telecaller@telecrm.test', RoleType::Telecaller, $manager->id);
+        $executor = $this->ensureUser('Executor Eva', 'executor@telecrm.test', RoleType::Executor, $manager->id);
 
         // ---- Lookup data (idempotent) -----------------------------------
         foreach (['Website', 'Facebook', 'Referral', 'Cold Call', 'LinkedIn'] as $name) {
@@ -54,6 +56,7 @@ class DatabaseSeeder extends Seeder
         // ---- Bulk demo data (dev only — requires faker) -----------------
         if (function_exists('fake')) {
             $this->seedDemoData($manager, $primaryCaller);
+            $this->seedDemoProject($manager, $executor);
         } else {
             $this->command?->warn('faker unavailable (--no-dev): skipped bulk demo leads. Core data seeded.');
         }
@@ -61,7 +64,60 @@ class DatabaseSeeder extends Seeder
         app(MetricsService::class)->aggregateAllForDate(Carbon::today());
 
         $this->command?->info('Seeded roles + demo users.');
-        $this->command?->info('Login: admin@telecrm.test / manager@telecrm.test / telecaller@telecrm.test (password: "password")');
+        $this->command?->info('Login (password "password"):');
+        $this->command?->info('  admin@telecrm.test · manager@telecrm.test · telecaller@telecrm.test · executor@telecrm.test');
+    }
+
+    /**
+     * Seed one sample converted lead handed off to the executor as a project
+     * with a couple of daily work-log entries, so the workflow is visible.
+     */
+    private function seedDemoProject(User $manager, User $executor): void
+    {
+        if (\App\Models\Project::count() > 0) {
+            return;
+        }
+
+        // Pick (or create) a converted lead to attach the project to.
+        $lead = Lead::where('status', \App\Enums\LeadStatus::Converted->value)->first()
+            ?? Lead::factory()->create([
+                'status' => \App\Enums\LeadStatus::Converted->value,
+                'assigned_to' => $manager->id,
+                'created_by' => $manager->id,
+                'converted_at' => now(),
+            ]);
+
+        $project = \App\Models\Project::create([
+            'lead_id' => $lead->id,
+            'assigned_to' => $executor->id,
+            'assigned_by' => $manager->id,
+            'title' => "Onboarding — {$lead->name}",
+            'description' => "Complete onboarding & delivery for {$lead->name}: kickoff call, requirement gathering, setup, and handover.",
+            'status' => \App\Enums\ProjectStatus::InProgress->value,
+            'progress_percent' => 40,
+            'start_date' => now()->subDays(2)->toDateString(),
+            'duration_days' => 7,
+            'deadline' => now()->addDays(5)->toDateString(),
+        ]);
+
+        \App\Models\ProjectLog::create([
+            'project_id' => $project->id,
+            'user_id' => $executor->id,
+            'log_date' => now()->subDays(2)->toDateString(),
+            'activities' => 'Kickoff call completed and requirements documented.',
+            'progress_percent' => 20,
+            'hours_spent' => 3,
+            'remarks' => null,
+        ]);
+        \App\Models\ProjectLog::create([
+            'project_id' => $project->id,
+            'user_id' => $executor->id,
+            'log_date' => now()->subDay()->toDateString(),
+            'activities' => 'Environment setup and initial configuration done.',
+            'progress_percent' => 40,
+            'hours_spent' => 5,
+            'remarks' => 'Waiting on client asset delivery for the next step.',
+        ]);
     }
 
     private function seedDemoData(User $manager, User $primaryCaller): void

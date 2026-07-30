@@ -76,6 +76,20 @@ class Lead extends Model
         return $this->hasMany(LeadStatusHistory::class)->latest();
     }
 
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class)->latest();
+    }
+
+    // ---- Scopes ----------------------------------------------------------
+
+    /** Converted leads that have not yet been handed off to an executor. */
+    public function scopeConvertedAwaitingHandoff(Builder $query): Builder
+    {
+        return $query->where('status', LeadStatus::Converted->value)
+            ->whereDoesntHave('projects');
+    }
+
     // ---- Scopes ----------------------------------------------------------
 
     public function scopeForUser(Builder $query, User $user): Builder

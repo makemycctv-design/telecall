@@ -7,6 +7,8 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadImportController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PerformanceController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectLogController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\PwaController;
 use App\Http\Controllers\ReportController;
@@ -77,11 +79,28 @@ Route::middleware('auth')->group(function () {
 
     /*
     |----------------------------------------------------------------------
+    | Projects (Executor task list + Manager handoff). Policies enforce that
+    | executors only see/act on their own projects; managers assign.
+    |----------------------------------------------------------------------
+    */
+    Route::middleware('role:manager,admin,executor')->group(function () {
+        Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
+        Route::get('projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+        Route::patch('projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
+        Route::post('projects/{project}/logs', [ProjectLogController::class, 'store'])->name('projects.logs.store');
+    });
+
+    /*
+    |----------------------------------------------------------------------
     | Manager + Admin
     |----------------------------------------------------------------------
     */
     Route::middleware('role:manager,admin')->group(function () {
         Route::patch('leads/{lead}/assign', [LeadController::class, 'assign'])->name('leads.assign');
+
+        // Assign converted leads to executors / remove projects.
+        Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
+        Route::delete('projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
         Route::get('import', [LeadImportController::class, 'create'])->name('import.create');
         Route::post('import', [LeadImportController::class, 'store'])->name('import.store');

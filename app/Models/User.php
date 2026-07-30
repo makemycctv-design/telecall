@@ -58,6 +58,16 @@ class User extends Authenticatable
         return $this->hasMany(Task::class, 'assigned_to');
     }
 
+    public function assignedProjects(): HasMany
+    {
+        return $this->hasMany(Project::class, 'assigned_to');
+    }
+
+    public function projectLogs(): HasMany
+    {
+        return $this->hasMany(ProjectLog::class);
+    }
+
     public function callLogs(): HasMany
     {
         return $this->hasMany(CallLog::class);
@@ -96,8 +106,13 @@ class User extends Authenticatable
 
     public function primaryRole(): ?Role
     {
-        // Highest privilege wins: admin > manager > telecaller.
-        $order = [RoleType::Admin->value => 3, RoleType::Manager->value => 2, RoleType::Telecaller->value => 1];
+        // Highest privilege wins: admin > manager > executor > telecaller.
+        $order = [
+            RoleType::Admin->value => 4,
+            RoleType::Manager->value => 3,
+            RoleType::Executor->value => 2,
+            RoleType::Telecaller->value => 1,
+        ];
 
         return $this->roles->sortByDesc(fn (Role $r) => $order[$r->slug] ?? 0)->first();
     }
@@ -117,11 +132,21 @@ class User extends Authenticatable
         return $this->hasRole(RoleType::Telecaller);
     }
 
+    public function isExecutor(): bool
+    {
+        return $this->hasRole(RoleType::Executor);
+    }
+
     // ---- Scopes ----------------------------------------------------------
 
     public function scopeTelecallers($query)
     {
         return $query->whereHas('roles', fn ($q) => $q->where('slug', RoleType::Telecaller->value));
+    }
+
+    public function scopeExecutors($query)
+    {
+        return $query->whereHas('roles', fn ($q) => $q->where('slug', RoleType::Executor->value));
     }
 
     public function scopeActive($query)

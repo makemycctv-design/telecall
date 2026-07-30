@@ -8,6 +8,7 @@ enum NotificationType: string
     case NewAssignment = 'new_assignment';
     case OverdueAlert = 'overdue_alert';
     case ManagerAlert = 'manager_alert';
+    case ProjectAssigned = 'project_assigned';
 
     public function label(): string
     {
@@ -16,6 +17,7 @@ enum NotificationType: string
             self::NewAssignment => 'New Lead Assigned',
             self::OverdueAlert => 'Overdue Task',
             self::ManagerAlert => 'Manager Alert',
+            self::ProjectAssigned => 'Project Assigned',
         };
     }
 
@@ -26,6 +28,7 @@ enum NotificationType: string
             self::NewAssignment => 'user-plus',
             self::OverdueAlert => 'alert-triangle',
             self::ManagerAlert => 'megaphone',
+            self::ProjectAssigned => 'clipboard-check',
         };
     }
 
