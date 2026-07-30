@@ -89,7 +89,8 @@ export default function ProjectShow({ project, statuses, canManage, isExecutor }
                         </div>
                     </Card>
 
-                    {canEdit && <DailyLogForm projectId={project.id} currentProgress={project.progress_percent || 0} />}
+                    {/* Only the assigned Executor records daily work logs. */}
+                    {isExecutor && <DailyLogForm projectId={project.id} currentProgress={project.progress_percent || 0} />}
                 </div>
 
                 {/* Right column: daily work log timeline */}

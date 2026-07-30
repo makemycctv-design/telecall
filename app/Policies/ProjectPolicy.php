@@ -39,10 +39,10 @@ class ProjectPolicy
         return $user->isManager() || $project->assigned_to === $user->id;
     }
 
-    /** Only the assigned executor (or a manager) can add daily work logs. */
+    /** Only the assigned executor records daily work logs (admins via before()). */
     public function addLog(User $user, Project $project): bool
     {
-        return $user->isManager() || $project->assigned_to === $user->id;
+        return $project->assigned_to === $user->id;
     }
 
     public function delete(User $user, Project $project): bool
