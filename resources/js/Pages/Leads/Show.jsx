@@ -9,6 +9,8 @@ export default function LeadShow({ lead, timeline, options, callOutcomes }) {
     const { props } = usePage();
     const roles = props.auth?.user?.roles || [];
     const canAssign = roles.includes('admin') || roles.includes('manager');
+    // Only telecallers log calls; admins/managers review only.
+    const canLogCall = roles.includes('telecaller') && !canAssign;
 
     const [status, setStatus] = useState(lead.status);
     const [assignee, setAssignee] = useState(lead.assigned_to || '');
@@ -78,14 +80,16 @@ export default function LeadShow({ lead, timeline, options, callOutcomes }) {
                     </Card>
                 </div>
 
-                {/* Middle: log a call */}
+                {/* Middle: log a call (telecallers only) */}
                 <div className="space-y-6">
-                    <Card>
-                        <CardHeader title="Log a call" subtitle="Works offline — syncs later" />
-                        <div className="px-5 py-4">
-                            <CallLogForm lead={lead} outcomes={callOutcomes} />
-                        </div>
-                    </Card>
+                    {canLogCall && (
+                        <Card>
+                            <CardHeader title="Log a call" subtitle="Works offline — syncs later" />
+                            <div className="px-5 py-4">
+                                <CallLogForm lead={lead} outcomes={callOutcomes} />
+                            </div>
+                        </Card>
+                    )}
 
                     {lead.next_follow_up_at && (
                         <Card className="px-5 py-4">

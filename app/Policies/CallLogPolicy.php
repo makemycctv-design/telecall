@@ -23,8 +23,9 @@ class CallLogPolicy
         return $callLog->user_id === $user->id;
     }
 
+    /** Only telecallers log calls (admins via before()); managers review only. */
     public function create(User $user): bool
     {
-        return true;
+        return $user->isTelecaller();
     }
 }
