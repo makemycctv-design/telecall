@@ -1,49 +1,23 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, Button, EmptyState, Pagination } from '@/Components/ui';
 import { fromNow } from '@/lib/format';
-import { subscribeToPush } from '@/pwa';
 
 const ICONS = {
     follow_up_reminder: '⏰',
     new_assignment: '➕',
     overdue_alert: '⚠️',
     manager_alert: '📢',
+    project_assigned: '🗂️',
 };
 
 export default function NotificationsIndex({ notifications }) {
-    const { props } = usePage();
-
-    const enablePush = async () => {
-        // Read the VAPID public key from the server (shared prop) so no rebuild
-        // is needed after setting it in .env. Fall back to the build-time var.
-        const key = props.vapid_public_key || import.meta.env.VITE_VAPID_PUBLIC_KEY;
-        const csrf = decodeURIComponent((document.cookie.match(/XSRF-TOKEN=([^;]+)/) || [])[1] || '');
-
-        if (!key) {
-            alert('Push is not configured yet. Set VAPID keys in the server .env, then run: php artisan config:cache');
-            return;
-        }
-        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-            alert('Push is not supported by this browser. Note: HTTPS is required.');
-            return;
-        }
-
-        try {
-            const sub = await subscribeToPush(key, csrf);
-            alert(sub ? 'Push notifications enabled on this device.' : 'Permission denied — allow notifications in your browser to enable push.');
-        } catch (e) {
-            alert('Could not enable push: ' + (e?.message || 'unknown error'));
-        }
-    };
-
     return (
         <AuthenticatedLayout header="Notifications">
             <Head title="Notifications" />
             <div className="mb-4 flex items-center justify-between">
                 <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Notifications</h1>
                 <div className="flex gap-2">
-                    <Button variant="secondary" onClick={enablePush}>🔔 Enable push</Button>
                     <Button variant="secondary" onClick={() => router.post('/notifications/read-all', {}, { preserveScroll: true })}>
                         Mark all read
                     </Button>
