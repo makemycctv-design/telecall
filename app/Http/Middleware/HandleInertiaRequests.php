@@ -47,6 +47,9 @@ class HandleInertiaRequests extends Middleware
             'unread_notifications_count' => fn () => $user
                 ? $user->appNotifications()->whereNull('read_at')->count()
                 : 0,
+            // Exposed at runtime so the client can subscribe to Web Push without
+            // a build-time env var (assets are pre-built for shared hosting).
+            'vapid_public_key' => config('telecrm.vapid.public_key'),
             'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
