@@ -81,6 +81,16 @@ class Lead extends Model
         return $this->hasMany(Project::class)->latest();
     }
 
+    public function quotations(): HasMany
+    {
+        return $this->hasMany(Quotation::class)->latest();
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class)->latest();
+    }
+
     // ---- Scopes ----------------------------------------------------------
 
     /** Converted leads that have not yet been handed off to an executor. */

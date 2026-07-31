@@ -53,6 +53,35 @@ class DatabaseSeeder extends Seeder
             LeadTag::firstOrCreate(['slug' => Str::slug($name)], ['name' => $name, 'color' => $color]);
         }
 
+        // ---- Sample product catalogue (idempotent) ----------------------
+        $catalogue = [
+            'CCTV Cameras' => [
+                ['Dome Camera 2MP', 1500, 18],
+                ['Bullet Camera 4MP', 2200, 18],
+                ['PTZ Camera', 8500, 18],
+            ],
+            'Recorders' => [
+                ['DVR 4-Channel', 3200, 18],
+                ['NVR 8-Channel', 6500, 18],
+            ],
+            'Services' => [
+                ['Installation & Setup', 2000, 18],
+                ['Annual Maintenance', 3500, 18],
+            ],
+        ];
+        foreach ($catalogue as $categoryName => $products) {
+            $category = \App\Models\Category::firstOrCreate(
+                ['slug' => Str::slug($categoryName)],
+                ['name' => $categoryName, 'is_active' => true],
+            );
+            foreach ($products as [$pName, $price, $tax]) {
+                \App\Models\Product::firstOrCreate(
+                    ['name' => $pName],
+                    ['category_id' => $category->id, 'price' => $price, 'tax_percent' => $tax, 'is_active' => true],
+                );
+            }
+        }
+
         // ---- Bulk demo data (dev only — requires faker) -----------------
         if (function_exists('fake')) {
             $this->seedDemoData($manager, $primaryCaller);

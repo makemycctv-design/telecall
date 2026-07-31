@@ -17,11 +17,24 @@ const NAV = [
     { label: 'Staff', href: '/staff', icon: '⚙️', roles: ['admin'] },
 ];
 
+// Collapsible "Sales" menu with sub-items.
+const SALES_NAV = {
+    label: 'Sales',
+    icon: '🧾',
+    children: [
+        { label: 'Categories', href: '/categories', roles: ['admin', 'manager'] },
+        { label: 'Products', href: '/products', roles: ['admin', 'manager'] },
+        { label: 'Quotations', href: '/quotations', roles: ['admin', 'manager', 'telecaller'] },
+        { label: 'Invoices', href: '/invoices', roles: ['admin', 'manager', 'telecaller'] },
+    ],
+};
+
 // Mobile bottom bar: a compact, role-aware subset.
 const MOBILE_NAV = [
     { label: 'Home', href: '/dashboard', icon: '🏠', roles: ['admin', 'manager', 'telecaller', 'executor'] },
     { label: 'Leads', href: '/leads', icon: '👥', roles: ['admin', 'manager', 'telecaller'] },
     { label: 'Tasks', href: '/tasks', icon: '✅', roles: ['admin', 'manager', 'telecaller'] },
+    { label: 'Sales', href: '/quotations', icon: '🧾', roles: ['telecaller'] },
     { label: 'Projects', href: '/projects', icon: '🗂️', roles: ['executor'] },
     { label: 'Alerts', href: '/notifications', icon: '🔔', roles: ['admin', 'manager', 'telecaller', 'executor'] },
 ];
@@ -41,8 +54,11 @@ export default function AuthenticatedLayout({ header, children }) {
     const [toast, setToast] = useState(null);
 
     const items = NAV.filter((i) => i.roles.some((r) => roles.includes(r)));
+    const salesChildren = SALES_NAV.children.filter((c) => c.roles.some((r) => roles.includes(r)));
     // Keep the mobile bar to at most 5 items for layout.
     const mobileItems = MOBILE_NAV.filter((i) => i.roles.some((r) => roles.includes(r))).slice(0, 5);
+    const salesActive = salesChildren.some((c) => path === c.href || path.startsWith(c.href + '/'));
+    const [salesOpen, setSalesOpen] = useState(salesActive);
 
     useEffect(() => {
         if (flash.success || flash.error) {
@@ -80,6 +96,42 @@ export default function AuthenticatedLayout({ header, children }) {
                                 {item.label}
                             </Link>
                         ))}
+
+                        {/* Sales group */}
+                        {salesChildren.length > 0 && (
+                            <div>
+                                <button
+                                    type="button"
+                                    onClick={() => setSalesOpen((o) => !o)}
+                                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                                        salesActive
+                                            ? 'text-indigo-700 dark:text-indigo-300'
+                                            : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                                    }`}
+                                >
+                                    <span>{SALES_NAV.icon}</span>
+                                    <span className="flex-1 text-left">{SALES_NAV.label}</span>
+                                    <span className={`text-xs transition-transform ${salesOpen ? 'rotate-90' : ''}`}>▸</span>
+                                </button>
+                                {salesOpen && (
+                                    <div className="mt-1 space-y-1 pl-6">
+                                        {salesChildren.map((child) => (
+                                            <Link
+                                                key={child.href}
+                                                href={child.href}
+                                                className={`block rounded-lg px-3 py-1.5 text-sm transition ${
+                                                    path === child.href || path.startsWith(child.href + '/')
+                                                        ? 'bg-indigo-50 font-medium text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                                                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                                                }`}
+                                            >
+                                                {child.label}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </nav>
                 </aside>
 

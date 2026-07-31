@@ -2,7 +2,11 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CallLogController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadImportController;
 use App\Http\Controllers\NotificationController;
@@ -89,6 +93,43 @@ Route::middleware('auth')->group(function () {
         Route::get('projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
         Route::patch('projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
         Route::post('projects/{project}/logs', [ProjectLogController::class, 'store'])->name('projects.logs.store');
+    });
+
+    /*
+    |----------------------------------------------------------------------
+    | Sales — Quotations & Invoices (telecallers create; managers/admins view)
+    |----------------------------------------------------------------------
+    */
+    Route::middleware('role:admin,manager,telecaller')->group(function () {
+        Route::get('quotations', [QuotationController::class, 'index'])->name('quotations.index');
+        Route::get('quotations/create', [QuotationController::class, 'create'])->name('quotations.create');
+        Route::post('quotations', [QuotationController::class, 'store'])->name('quotations.store');
+        Route::get('quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
+        Route::patch('quotations/{quotation}/status', [QuotationController::class, 'updateStatus'])->name('quotations.status');
+        Route::post('quotations/{quotation}/email', [QuotationController::class, 'sendEmail'])->name('quotations.email');
+        Route::post('quotations/{quotation}/convert', [QuotationController::class, 'convert'])->name('quotations.convert');
+        Route::delete('quotations/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.destroy');
+
+        Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+        Route::post('invoices/{invoice}/payment', [InvoiceController::class, 'recordPayment'])->name('invoices.payment');
+    });
+
+    /*
+    |----------------------------------------------------------------------
+    | Sales — Categories & Products (admins & managers manage)
+    |----------------------------------------------------------------------
+    */
+    Route::middleware('role:admin,manager')->group(function () {
+        Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::patch('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+        Route::get('products', [ProductController::class, 'index'])->name('products.index');
+        Route::post('products', [ProductController::class, 'store'])->name('products.store');
+        Route::patch('products/{product}', [ProductController::class, 'update'])->name('products.update');
+        Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     });
 
     /*
