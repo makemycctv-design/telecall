@@ -5,6 +5,7 @@ import { Card, CardHeader, Button, Badge, Field, Input, Select, Modal, Avatar, P
 
 export default function StaffIndex({ staff, roles, managers }) {
     const [showCreate, setShowCreate] = useState(false);
+    const [showClear, setShowClear] = useState(false);
     const [editStaff, setEditStaff] = useState(null);
     const currentUserId = usePage().props.auth?.user?.id;
 
@@ -90,9 +91,60 @@ export default function StaffIndex({ staff, roles, managers }) {
 
             <div className="mt-4 flex justify-center"><Pagination links={staff.links} /></div>
 
+            {/* Danger zone: clear all CRM data */}
+            <div className="mt-8 rounded-xl border border-rose-200 bg-rose-50/50 p-5 dark:border-rose-900/50 dark:bg-rose-950/20">
+                <h2 className="text-sm font-semibold text-rose-700 dark:text-rose-400">Danger zone</h2>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                    Permanently delete all leads, tasks and projects (with their call logs, work logs, and history).
+                    Users, roles, lead sources and tags are kept.
+                </p>
+                <Button variant="danger" className="mt-3" onClick={() => setShowClear(true)}>
+                    Clear all leads, tasks &amp; projects
+                </Button>
+            </div>
+
             <CreateStaffModal open={showCreate} onClose={() => setShowCreate(false)} roles={roles} managers={managers} />
+            <ClearDataModal open={showClear} onClose={() => setShowClear(false)} />
             <EditStaffModal staff={editStaff} onClose={() => setEditStaff(null)} roles={roles} managers={managers} />
         </AuthenticatedLayout>
+    );
+}
+
+function ClearDataModal({ open, onClose }) {
+    const { data, setData, post, processing, errors, reset } = useForm({ confirm: '' });
+
+    const submit = (e) => {
+        e.preventDefault();
+        post('/settings/clear-data', {
+            preserveScroll: true,
+            onSuccess: () => { reset(); onClose(); },
+        });
+    };
+
+    return (
+        <Modal
+            open={open}
+            onClose={onClose}
+            title="Clear all CRM data"
+            footer={
+                <>
+                    <Button variant="secondary" onClick={onClose}>Cancel</Button>
+                    <Button variant="danger" onClick={submit} disabled={processing || data.confirm !== 'DELETE'}>
+                        Delete everything
+                    </Button>
+                </>
+            }
+        >
+            <div className="space-y-3">
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                    This permanently deletes <strong>all leads, tasks and projects</strong> and their related records.
+                    This cannot be undone. Your users, roles, lead sources and tags will be kept.
+                </p>
+                <Field label={<span>Type <strong>DELETE</strong> to confirm</span>} error={errors.confirm}>
+                    <Input value={data.confirm} onChange={(e) => setData('confirm', e.target.value)} placeholder="DELETE" autoFocus />
+                </Field>
+            </div>
+        </Modal>
     );
 }
 

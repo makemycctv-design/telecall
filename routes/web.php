@@ -12,6 +12,7 @@ use App\Http\Controllers\ProjectLogController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\PwaController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
@@ -121,5 +122,8 @@ Route::middleware('auth')->group(function () {
         Route::post('staff', [StaffController::class, 'store'])->name('staff.store');
         Route::patch('staff/{user}', [StaffController::class, 'update'])->name('staff.update');
         Route::delete('staff/{user}', [StaffController::class, 'destroy'])->name('staff.destroy');
+
+        // Danger zone: wipe all leads/tasks/projects (keeps users/roles/sources/tags).
+        Route::post('settings/clear-data', [SettingsController::class, 'clearData'])->name('settings.clearData');
     });
 });
