@@ -203,16 +203,22 @@ class DatabaseSeeder extends Seeder
 
     private function ensureUser(string $name, string $email, RoleType $role, ?int $managerId = null): User
     {
-        $user = User::firstOrCreate(
-            ['email' => $email],
-            [
-                'name' => $name,
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-                'manager_id' => $managerId,
-                'is_active' => true,
-            ],
-        );
+        // Look up including soft-deleted rows — the email unique index also
+        // covers trashed users, so a plain firstOrCreate would try to re-insert
+        // a previously-deleted account and violate the constraint.
+        $user = User::withTrashed()->firstOrNew(['email' => $email]);
+
+        $user->name = $name;
+        $user->manager_id = $managerId;
+        $user->is_active = true;
+        if (! $user->exists) {
+            $user->password = Hash::make('password');
+            $user->email_verified_at = now();
+        }
+        if ($user->trashed()) {
+            $user->deleted_at = null; // restore a previously-deleted account
+        }
+        $user->save();
 
         $user->roles()->syncWithoutDetaching(Role::where('slug', $role->value)->pluck('id'));
 
