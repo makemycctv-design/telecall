@@ -1,4 +1,4 @@
-import { Head, router, useForm } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Card, CardHeader, Button, Badge, Field, Input, Select, Modal, Avatar, Pagination, EmptyState } from '@/Components/ui';
@@ -6,6 +6,13 @@ import { Card, CardHeader, Button, Badge, Field, Input, Select, Modal, Avatar, P
 export default function StaffIndex({ staff, roles, managers }) {
     const [showCreate, setShowCreate] = useState(false);
     const [editStaff, setEditStaff] = useState(null);
+    const currentUserId = usePage().props.auth?.user?.id;
+
+    const remove = (u) => {
+        if (window.confirm(`Delete ${u.name}? This removes their account from the staff list.`)) {
+            router.delete(`/staff/${u.id}`, { preserveScroll: true });
+        }
+    };
 
     return (
         <AuthenticatedLayout header="Staff management">
@@ -59,10 +66,18 @@ export default function StaffIndex({ staff, roles, managers }) {
                                                 </button>
                                                 <button
                                                     onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
-                                                    className={`text-xs font-medium hover:underline ${u.is_active ? 'text-rose-600' : 'text-emerald-600'}`}
+                                                    className={`text-xs font-medium hover:underline ${u.is_active ? 'text-amber-600' : 'text-emerald-600'}`}
                                                 >
                                                     {u.is_active ? 'Deactivate' : 'Activate'}
                                                 </button>
+                                                {u.id !== currentUserId && (
+                                                    <button
+                                                        onClick={() => remove(u)}
+                                                        className="text-xs font-medium text-rose-600 hover:underline"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>

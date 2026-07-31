@@ -89,10 +89,15 @@ class StaffController extends Controller
         return back()->with('success', 'Staff member updated.');
     }
 
-    public function destroy(User $user): RedirectResponse
+    public function destroy(Request $request, User $user): RedirectResponse
     {
+        // Guard: never let an admin delete their own account.
+        if ($user->id === $request->user()->id) {
+            return back()->with('error', 'You cannot delete your own account.');
+        }
+
         $user->delete();
 
-        return back()->with('success', 'Staff member deactivated.');
+        return back()->with('success', 'Staff member deleted.');
     }
 }
