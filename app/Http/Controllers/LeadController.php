@@ -88,9 +88,16 @@ class LeadController extends Controller
         $tags = $data['tags'] ?? [];
         unset($data['tags']);
 
-        $data['created_by'] = $request->user()->id;
+        $user = $request->user();
+        $data['created_by'] = $user->id;
         $data['status'] ??= LeadStatus::New->value;
         $data['priority'] ??= LeadPriority::Medium->value;
+
+        // Telecallers always self-assign the leads they add (they can't assign
+        // to other staff), so they retain access to what they create.
+        if ($user->isTelecaller() && ! $user->isManager() && ! $user->isAdmin()) {
+            $data['assigned_to'] = $user->id;
+        }
 
         $lead = Lead::create($data);
 

@@ -1,10 +1,12 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button, Card, Field, Input, Select, StatusBadge, Badge, EmptyState, Pagination, Modal } from '@/Components/ui';
 import { formatDateTime } from '@/lib/format';
 
 export default function LeadsIndex({ leads, filters, options }) {
+    const roles = usePage().props.auth?.user?.roles || [];
+    const canAssign = roles.includes('admin') || roles.includes('manager');
     const [showCreate, setShowCreate] = useState(false);
     const [f, setF] = useState({
         search: filters.search || '',
@@ -121,7 +123,7 @@ export default function LeadsIndex({ leads, filters, options }) {
                 <Pagination links={leads.links} />
             </div>
 
-            <CreateLeadModal open={showCreate} onClose={() => setShowCreate(false)} options={options} />
+            <CreateLeadModal open={showCreate} onClose={() => setShowCreate(false)} options={options} canAssign={canAssign} />
         </AuthenticatedLayout>
     );
 }
@@ -136,7 +138,7 @@ function priorityColor(value, options) {
     return options.priorities.find((p) => p.value === value)?.color || 'slate';
 }
 
-function CreateLeadModal({ open, onClose, options }) {
+function CreateLeadModal({ open, onClose, options, canAssign }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '', phone: '', email: '', company: '', city: '',
         priority: 'medium', lead_source_id: '', assigned_to: '', notes: '',
@@ -190,12 +192,18 @@ function CreateLeadModal({ open, onClose, options }) {
                         </Select>
                     </Field>
                 </div>
-                <Field label="Assign to">
-                    <Select value={data.assigned_to} onChange={(e) => setData('assigned_to', e.target.value)}>
-                        <option value="">Auto-assign</option>
-                        {options.telecallers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                    </Select>
-                </Field>
+                {canAssign ? (
+                    <Field label="Assign to">
+                        <Select value={data.assigned_to} onChange={(e) => setData('assigned_to', e.target.value)}>
+                            <option value="">Auto-assign</option>
+                            {options.telecallers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </Select>
+                    </Field>
+                ) : (
+                    <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500 dark:bg-slate-800/50">
+                        This lead will be assigned to you.
+                    </p>
+                )}
             </form>
         </Modal>
     );
