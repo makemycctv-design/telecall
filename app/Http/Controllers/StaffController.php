@@ -19,7 +19,6 @@ class StaffController extends Controller
     {
         $staff = User::query()
             ->with('roles:id,slug,name')
-            ->withCount(['assignedLeads', 'callLogs'])
             ->when($request->string('search')->toString(), fn ($q, $s) => $q
                 ->where('name', 'like', "%{$s}%")->orWhere('email', 'like', "%{$s}%"))
             ->orderBy('name')

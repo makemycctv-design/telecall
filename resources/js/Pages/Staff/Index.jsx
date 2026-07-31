@@ -25,8 +25,6 @@ export default function StaffIndex({ staff, roles, managers }) {
                                 <tr>
                                     <th className="px-5 py-3 font-medium">Name</th>
                                     <th className="px-5 py-3 font-medium">Roles</th>
-                                    <th className="px-5 py-3 font-medium">Leads</th>
-                                    <th className="px-5 py-3 font-medium">Calls</th>
                                     <th className="px-5 py-3 font-medium">Status</th>
                                     <th className="px-5 py-3" />
                                 </tr>
@@ -48,8 +46,6 @@ export default function StaffIndex({ staff, roles, managers }) {
                                                 {u.roles.map((r) => <Badge key={r.id} color="blue">{r.slug}</Badge>)}
                                             </span>
                                         </td>
-                                        <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.assigned_leads_count}</td>
-                                        <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.call_logs_count}</td>
                                         <td className="px-5 py-3">
                                             <Badge color={u.is_active ? 'emerald' : 'rose'}>{u.is_active ? 'Active' : 'Inactive'}</Badge>
                                         </td>
