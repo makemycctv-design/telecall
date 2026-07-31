@@ -41,7 +41,11 @@ export function fromNow(value) {
 }
 
 export function formatCurrency(value) {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(Number(value) || 0);
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 2,
+    }).format(Number(value) || 0);
 }
 
 export function initials(name = '') {
