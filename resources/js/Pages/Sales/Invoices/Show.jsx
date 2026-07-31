@@ -75,7 +75,10 @@ export default function InvoiceShow({ invoice, statuses }) {
                             <Row label="Advance / paid" value={<span className="text-emerald-600">{formatCurrency(invoice.advance_amount)}</span>} />
                             <Row label="Balance due" value={<span className={invoice.balance_amount > 0 ? 'text-rose-600' : 'text-emerald-600'}>{formatCurrency(invoice.balance_amount)}</span>} />
                         </dl>
-                        {!paid && <Button className="mt-4 w-full" onClick={() => setShowPay(true)}>Record payment</Button>}
+                        <Button as="a" href={`/invoices/${invoice.id}/download`} variant="secondary" className="mt-4 w-full">
+                            ⬇ Download PDF
+                        </Button>
+                        {!paid && <Button className="mt-2 w-full" onClick={() => setShowPay(true)}>Record payment</Button>}
                     </Card>
                 </div>
             </div>

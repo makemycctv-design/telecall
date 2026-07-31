@@ -111,6 +111,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('quotations/{quotation}', [QuotationController::class, 'destroy'])->name('quotations.destroy');
 
         Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+        Route::get('invoices/{invoice}/download', [InvoiceController::class, 'download'])->name('invoices.download');
         Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
         Route::post('invoices/{invoice}/payment', [InvoiceController::class, 'recordPayment'])->name('invoices.payment');
     });

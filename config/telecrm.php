@@ -34,6 +34,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Company details (printed on invoice / quotation PDFs)
+    |--------------------------------------------------------------------------
+    | Logo: place your file at public/images/logo.png (or set COMPANY_LOGO to a
+    | path relative to public/). Leave blank to hide the logo.
+    */
+    'company' => [
+        'name' => env('COMPANY_NAME', 'TeleCRM'),
+        'address' => env('COMPANY_ADDRESS', ''),
+        'phone' => env('COMPANY_PHONE', ''),
+        'email' => env('COMPANY_EMAIL', ''),
+        'gstin' => env('COMPANY_GSTIN', ''),
+        'website' => env('COMPANY_WEBSITE', ''),
+        'logo' => env('COMPANY_LOGO', 'images/logo.png'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Auto status transitions
     |--------------------------------------------------------------------------
     | Maps a call outcome to the lead status it should set automatically.
