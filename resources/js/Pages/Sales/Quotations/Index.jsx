@@ -6,6 +6,13 @@ import { formatCurrency, formatDate } from '@/lib/format';
 export default function QuotationsIndex({ quotations, statuses, filters }) {
     const meta = (v) => statuses.find((s) => s.value === v) || { label: v, color: 'slate' };
 
+    const removeQuotation = (e, q) => {
+        e.stopPropagation();
+        if (window.confirm(`Delete quotation ${q.quotation_number}?`)) {
+            router.delete(`/quotations/${q.id}`, { preserveScroll: true });
+        }
+    };
+
     return (
         <AuthenticatedLayout header="Sales · Quotations">
             <Head title="Quotations" />
@@ -38,6 +45,7 @@ export default function QuotationsIndex({ quotations, statuses, filters }) {
                                     <th className="px-5 py-3 font-medium">Total</th>
                                     <th className="px-5 py-3 font-medium">Status</th>
                                     <th className="px-5 py-3 font-medium">Valid until</th>
+                                    <th className="px-5 py-3" />
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -51,6 +59,14 @@ export default function QuotationsIndex({ quotations, statuses, filters }) {
                                         <td className="px-5 py-3 font-medium text-slate-900 dark:text-slate-100">{formatCurrency(q.total)}</td>
                                         <td className="px-5 py-3"><Badge color={meta(q.status).color}>{meta(q.status).label}</Badge></td>
                                         <td className="px-5 py-3 text-slate-500">{q.valid_until ? formatDate(q.valid_until) : '—'}</td>
+                                        <td className="px-5 py-3 text-right">
+                                            <button
+                                                onClick={(e) => removeQuotation(e, q)}
+                                                className="text-xs font-medium text-rose-600 hover:underline"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

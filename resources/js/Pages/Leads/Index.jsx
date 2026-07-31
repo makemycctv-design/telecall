@@ -8,6 +8,13 @@ export default function LeadsIndex({ leads, filters, options }) {
     const roles = usePage().props.auth?.user?.roles || [];
     const canAssign = roles.includes('admin') || roles.includes('manager');
     const [showCreate, setShowCreate] = useState(false);
+
+    const removeLead = (e, lead) => {
+        e.stopPropagation();
+        if (window.confirm(`Delete lead "${lead.name}"? This also removes its calls, tasks and history.`)) {
+            router.delete(`/leads/${lead.id}`, { preserveScroll: true });
+        }
+    };
     const [f, setF] = useState({
         search: filters.search || '',
         status: filters.status || '',
@@ -90,6 +97,7 @@ export default function LeadsIndex({ leads, filters, options }) {
                                     <th className="px-5 py-3 font-medium">Priority</th>
                                     <th className="px-5 py-3 font-medium">Assignee</th>
                                     <th className="px-5 py-3 font-medium">Follow-up</th>
+                                    <th className="px-5 py-3" />
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -111,6 +119,14 @@ export default function LeadsIndex({ leads, filters, options }) {
                                         </td>
                                         <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{lead.assignee?.name || '—'}</td>
                                         <td className="px-5 py-3 text-slate-500">{lead.next_follow_up_at ? formatDateTime(lead.next_follow_up_at) : '—'}</td>
+                                        <td className="px-5 py-3 text-right">
+                                            <button
+                                                onClick={(e) => removeLead(e, lead)}
+                                                className="text-xs font-medium text-rose-600 hover:underline"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

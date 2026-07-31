@@ -35,7 +35,8 @@ class LeadPolicy
 
     public function delete(User $user, Lead $lead): bool
     {
-        return $user->isManager();
+        // Managers/admins can delete team leads; telecallers their own.
+        return $user->isManager() || $lead->assigned_to === $user->id;
     }
 
     public function assign(User $user, Lead $lead): bool
