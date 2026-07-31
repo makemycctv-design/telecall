@@ -64,13 +64,24 @@ class StaffController extends Controller
     {
         $data = $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'email' => ['sometimes', 'required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
             'phone' => ['nullable', 'string', 'max:32'],
+            // Password is optional on edit; only changed when provided.
+            'password' => ['nullable', Password::defaults()],
             'is_active' => ['nullable', 'boolean'],
             'role' => ['nullable', Rule::in(RoleType::values())],
             'manager_id' => ['nullable', 'exists:users,id'],
         ]);
 
-        $user->update(collect($data)->except('role')->toArray());
+        // Apply plain attributes (email/name/phone/is_active/manager_id).
+        $user->fill(collect($data)->only(['name', 'email', 'phone', 'is_active', 'manager_id'])->toArray());
+
+        // Only overwrite the password when a new one was supplied.
+        if (! empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
+        }
+
+        $user->save();
 
         if (! empty($data['role'])) {
             $user->roles()->sync(Role::where('slug', $data['role'])->pluck('id'));
