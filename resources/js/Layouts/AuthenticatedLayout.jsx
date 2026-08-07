@@ -4,6 +4,7 @@ import ThemeToggle from '@/Components/ThemeToggle';
 import OfflineBanner from '@/Components/OfflineBanner';
 import InstallPrompt from '@/Components/InstallPrompt';
 import { Avatar } from '@/Components/ui';
+import { isInstallable, promptInstall, onPwaEvent } from '@/pwa';
 
 // Navigation is filtered by the user's roles. `roles` here are role slugs.
 const NAV = [
@@ -39,6 +40,20 @@ export default function AuthenticatedLayout({ header, children }) {
     const [toast, setToast] = useState(null);
 
     const items = NAV.filter((i) => i.roles.some((r) => roles.includes(r)));
+
+    const [canInstall, setCanInstall] = useState(isInstallable());
+
+    useEffect(() => {
+        return onPwaEvent((event) => {
+            if (event.type === 'installable') setCanInstall(true);
+            if (event.type === 'installed') setCanInstall(false);
+        });
+    }, []);
+
+    const handleInstallClick = async () => {
+        const accepted = await promptInstall();
+        if (accepted) setCanInstall(false);
+    };
 
     useEffect(() => {
         if (flash.success || flash.error) {
@@ -76,6 +91,15 @@ export default function AuthenticatedLayout({ header, children }) {
                                 {item.label}
                             </Link>
                         ))}
+                        {canInstall && (
+                            <button
+                                onClick={handleInstallClick}
+                                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-indigo-600 transition hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950"
+                            >
+                                <span>📲</span>
+                                Install App
+                            </button>
+                        )}
                     </nav>
                 </aside>
 
