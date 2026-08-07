@@ -1,11 +1,12 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button, Card, Field, Input, Select, StatusBadge, Badge, EmptyState, Pagination, Modal } from '@/Components/ui';
 import { formatDateTime } from '@/lib/format';
 
 export default function LeadsIndex({ leads, filters, options }) {
     const [showCreate, setShowCreate] = useState(false);
+    const [editingLead, setEditingLead] = useState(null);
     const [f, setF] = useState({
         search: filters.search || '',
         status: filters.status || '',
@@ -88,6 +89,7 @@ export default function LeadsIndex({ leads, filters, options }) {
                                     <th className="px-5 py-3 font-medium">Priority</th>
                                     <th className="px-5 py-3 font-medium">Assignee</th>
                                     <th className="px-5 py-3 font-medium">Follow-up</th>
+                                    <th className="px-5 py-3 font-medium">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -109,6 +111,30 @@ export default function LeadsIndex({ leads, filters, options }) {
                                         </td>
                                         <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{lead.assignee?.name || '—'}</td>
                                         <td className="px-5 py-3 text-slate-500">{lead.next_follow_up_at ? formatDateTime(lead.next_follow_up_at) : '—'}</td>
+                                        <td className="px-5 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setEditingLead(lead);
+                                                    }}
+                                                    className="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (confirm('Are you sure you want to delete this lead?')) {
+                                                            router.delete(`/leads/${lead.id}`);
+                                                        }
+                                                    }}
+                                                    className="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -122,6 +148,7 @@ export default function LeadsIndex({ leads, filters, options }) {
             </div>
 
             <CreateLeadModal open={showCreate} onClose={() => setShowCreate(false)} options={options} />
+            <EditLeadModal lead={editingLead} onClose={() => setEditingLead(null)} options={options} />
         </AuthenticatedLayout>
     );
 }
@@ -195,6 +222,117 @@ function CreateLeadModal({ open, onClose, options }) {
                         <option value="">Auto-assign</option>
                         {options.telecallers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                     </Select>
+                </Field>
+            </form>
+        </Modal>
+    );
+}
+
+function EditLeadModal({ lead, onClose, options }) {
+    const { data, setData, patch, processing, errors, reset } = useForm({
+        name: '',
+        phone: '',
+        email: '',
+        company: '',
+        city: '',
+        priority: 'medium',
+        lead_source_id: '',
+        assigned_to: '',
+        notes: '',
+        deal_value: '',
+        next_follow_up_at: '',
+    });
+
+    const open = !!lead;
+
+    useEffect(() => {
+        if (lead) {
+            setData({
+                name: lead.name || '',
+                phone: lead.phone || '',
+                email: lead.email || '',
+                company: lead.company || '',
+                city: lead.city || '',
+                priority: lead.priority || 'medium',
+                lead_source_id: lead.lead_source_id || '',
+                assigned_to: lead.assigned_to || '',
+                notes: lead.notes || '',
+                deal_value: lead.deal_value || '',
+                next_follow_up_at: lead.next_follow_up_at ? lead.next_follow_up_at.slice(0, 16) : '',
+            });
+        }
+    }, [lead]);
+
+    const submit = (e) => {
+        e.preventDefault();
+        patch(`/leads/${lead.id}`, {
+            onSuccess: () => {
+                reset();
+                onClose();
+            },
+        });
+    };
+
+    return (
+        <Modal
+            open={open}
+            onClose={onClose}
+            title="Edit lead"
+            footer={
+                <>
+                    <Button variant="secondary" onClick={onClose}>Cancel</Button>
+                    <Button onClick={submit} disabled={processing}>Save changes</Button>
+                </>
+            }
+        >
+            <form onSubmit={submit} className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                    <Field label="Name *" error={errors.name}>
+                        <Input value={data.name} onChange={(e) => setData('name', e.target.value)} />
+                    </Field>
+                    <Field label="Phone *" error={errors.phone}>
+                        <Input value={data.phone} onChange={(e) => setData('phone', e.target.value)} />
+                    </Field>
+                    <Field label="Email" error={errors.email}>
+                        <Input type="email" value={data.email} onChange={(e) => setData('email', e.target.value)} />
+                    </Field>
+                    <Field label="Company" error={errors.company}>
+                        <Input value={data.company} onChange={(e) => setData('company', e.target.value)} />
+                    </Field>
+                    <Field label="City" error={errors.city}>
+                        <Input value={data.city} onChange={(e) => setData('city', e.target.value)} />
+                    </Field>
+                    <Field label="Priority" error={errors.priority}>
+                        <Select value={data.priority} onChange={(e) => setData('priority', e.target.value)}>
+                            {options.priorities.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+                        </Select>
+                    </Field>
+                    <Field label="Source" error={errors.lead_source_id}>
+                        <Select value={data.lead_source_id} onChange={(e) => setData('lead_source_id', e.target.value)}>
+                            <option value="">—</option>
+                            {options.sources.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </Select>
+                    </Field>
+                    <Field label="Assign to" error={errors.assigned_to}>
+                        <Select value={data.assigned_to} onChange={(e) => setData('assigned_to', e.target.value)}>
+                            <option value="">—</option>
+                            {options.telecallers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </Select>
+                    </Field>
+                    <Field label="Deal value" error={errors.deal_value}>
+                        <Input type="number" min="0" step="0.01" value={data.deal_value} onChange={(e) => setData('deal_value', e.target.value)} />
+                    </Field>
+                    <Field label="Next follow-up" error={errors.next_follow_up_at}>
+                        <Input type="datetime-local" value={data.next_follow_up_at} onChange={(e) => setData('next_follow_up_at', e.target.value)} />
+                    </Field>
+                </div>
+                <Field label="Notes" error={errors.notes}>
+                    <textarea
+                        className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                        rows={3}
+                        value={data.notes}
+                        onChange={(e) => setData('notes', e.target.value)}
+                    />
                 </Field>
             </form>
         </Modal>
