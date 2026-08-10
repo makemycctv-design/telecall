@@ -5,6 +5,7 @@ import { Card, CardHeader, Button, Badge, Field, Input, Select, Modal, Avatar, P
 
 export default function StaffIndex({ staff, roles, managers }) {
     const [showCreate, setShowCreate] = useState(false);
+    const [editUser, setEditUser] = useState(null);
 
     return (
         <AuthenticatedLayout header="Staff management">
@@ -53,12 +54,20 @@ export default function StaffIndex({ staff, roles, managers }) {
                                             <Badge color={u.is_active ? 'emerald' : 'rose'}>{u.is_active ? 'Active' : 'Inactive'}</Badge>
                                         </td>
                                         <td className="px-5 py-3 text-right">
-                                            <button
-                                                onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
-                                                className="text-xs font-medium text-indigo-600 hover:underline"
-                                            >
-                                                {u.is_active ? 'Deactivate' : 'Activate'}
-                                            </button>
+                                            <div className="flex items-center justify-end gap-3">
+                                                <button
+                                                    onClick={() => setEditUser(u)}
+                                                    className="text-xs font-medium text-blue-600 hover:underline"
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
+                                                    className="text-xs font-medium text-indigo-600 hover:underline"
+                                                >
+                                                    {u.is_active ? 'Deactivate' : 'Activate'}
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -71,6 +80,7 @@ export default function StaffIndex({ staff, roles, managers }) {
             <div className="mt-4 flex justify-center"><Pagination links={staff.links} /></div>
 
             <CreateStaffModal open={showCreate} onClose={() => setShowCreate(false)} roles={roles} managers={managers} />
+            <EditStaffModal open={!!editUser} onClose={() => setEditUser(null)} user={editUser} roles={roles} managers={managers} />
         </AuthenticatedLayout>
     );
 }
@@ -99,6 +109,62 @@ function CreateStaffModal({ open, onClose, roles, managers }) {
                     <Field label="Phone"><Input value={data.phone} onChange={(e) => setData('phone', e.target.value)} /></Field>
                     <Field label="Password *" error={errors.password}><Input type="password" value={data.password} onChange={(e) => setData('password', e.target.value)} /></Field>
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                    <Field label="Role">
+                        <Select value={data.role} onChange={(e) => setData('role', e.target.value)}>
+                            {roles.map((r) => <option key={r.id} value={r.slug}>{r.name}</option>)}
+                        </Select>
+                    </Field>
+                    <Field label="Manager">
+                        <Select value={data.manager_id} onChange={(e) => setData('manager_id', e.target.value)}>
+                            <option value="">—</option>
+                            {managers.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+                        </Select>
+                    </Field>
+                </div>
+            </form>
+        </Modal>
+    );
+}
+
+function EditStaffModal({ open, onClose, user, roles, managers }) {
+    const { data, setData, patch, processing, errors, reset } = useForm({
+        name: '', phone: '', role: '', manager_id: '',
+    });
+
+    const [initialized, setInitialized] = useState(false);
+
+    if (open && user && !initialized) {
+        setData({
+            name: user.name || '',
+            phone: user.phone || '',
+            role: user.roles?.[0]?.slug || 'telecaller',
+            manager_id: user.manager_id || '',
+        });
+        setInitialized(true);
+    }
+
+    if (!open && initialized) {
+        setInitialized(false);
+    }
+
+    const submit = (e) => {
+        e.preventDefault();
+        patch(`/staff/${user.id}`, { preserveScroll: true, onSuccess: () => { reset(); onClose(); } });
+    };
+
+    if (!user) return null;
+
+    return (
+        <Modal
+            open={open}
+            onClose={() => { reset(); onClose(); }}
+            title={`Edit ${user.name}`}
+            footer={<><Button variant="secondary" onClick={() => { reset(); onClose(); }}>Cancel</Button><Button onClick={submit} disabled={processing}>Save changes</Button></>}
+        >
+            <form onSubmit={submit} className="space-y-3">
+                <Field label="Name *" error={errors.name}><Input value={data.name} onChange={(e) => setData('name', e.target.value)} /></Field>
+                <Field label="Phone" error={errors.phone}><Input value={data.phone} onChange={(e) => setData('phone', e.target.value)} /></Field>
                 <div className="grid grid-cols-2 gap-3">
                     <Field label="Role">
                         <Select value={data.role} onChange={(e) => setData('role', e.target.value)}>
