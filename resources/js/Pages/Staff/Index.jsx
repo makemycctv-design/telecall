@@ -6,6 +6,7 @@ import { Card, CardHeader, Button, Badge, Field, Input, Select, Modal, Avatar, P
 export default function StaffIndex({ staff, roles, managers }) {
     const [showCreate, setShowCreate] = useState(false);
     const [editUser, setEditUser] = useState(null);
+    const [passwordUser, setPasswordUser] = useState(null);
 
     return (
         <AuthenticatedLayout header="Staff management">
@@ -62,6 +63,12 @@ export default function StaffIndex({ staff, roles, managers }) {
                                                     Edit
                                                 </button>
                                                 <button
+                                                    onClick={() => setPasswordUser(u)}
+                                                    className="text-xs font-medium text-amber-600 hover:underline"
+                                                >
+                                                    Password
+                                                </button>
+                                                <button
                                                     onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
                                                     className="text-xs font-medium text-indigo-600 hover:underline"
                                                 >
@@ -81,6 +88,7 @@ export default function StaffIndex({ staff, roles, managers }) {
 
             <CreateStaffModal open={showCreate} onClose={() => setShowCreate(false)} roles={roles} managers={managers} />
             <EditStaffModal open={!!editUser} onClose={() => setEditUser(null)} user={editUser} roles={roles} managers={managers} />
+            <ChangePasswordModal open={!!passwordUser} onClose={() => setPasswordUser(null)} user={passwordUser} />
         </AuthenticatedLayout>
     );
 }
@@ -178,6 +186,44 @@ function EditStaffModal({ open, onClose, user, roles, managers }) {
                         </Select>
                     </Field>
                 </div>
+            </form>
+        </Modal>
+    );
+}
+
+
+function ChangePasswordModal({ open, onClose, user }) {
+    const { data, setData, patch, processing, errors, reset } = useForm({
+        password: '', password_confirmation: '',
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+        patch(`/staff/${user.id}`, {
+            preserveScroll: true,
+            onSuccess: () => { reset(); onClose(); },
+        });
+    };
+
+    if (!user) return null;
+
+    return (
+        <Modal
+            open={open}
+            onClose={() => { reset(); onClose(); }}
+            title={`Change password for ${user.name}`}
+            footer={<><Button variant="secondary" onClick={() => { reset(); onClose(); }}>Cancel</Button><Button onClick={submit} disabled={processing || data.password.length < 8}>Update password</Button></>}
+        >
+            <form onSubmit={submit} className="space-y-3">
+                <Field label="New password *" error={errors.password}>
+                    <Input type="password" value={data.password} onChange={(e) => setData('password', e.target.value)} placeholder="Min 8 characters" />
+                </Field>
+                <Field label="Confirm password">
+                    <Input type="password" value={data.password_confirmation} onChange={(e) => setData('password_confirmation', e.target.value)} placeholder="Re-type password" />
+                </Field>
+                {data.password && data.password_confirmation && data.password !== data.password_confirmation && (
+                    <p className="text-xs text-rose-600">Passwords do not match</p>
+                )}
             </form>
         </Modal>
     );

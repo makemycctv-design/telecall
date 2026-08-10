@@ -65,12 +65,19 @@ class StaffController extends Controller
         $data = $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:32'],
+            'password' => ['nullable', 'string', 'min:8'],
             'is_active' => ['nullable', 'boolean'],
             'role' => ['nullable', Rule::in(RoleType::values())],
             'manager_id' => ['nullable', 'exists:users,id'],
         ]);
 
-        $user->update(collect($data)->except('role')->toArray());
+        $updateData = collect($data)->except('role', 'password')->toArray();
+
+        if (! empty($data['password'])) {
+            $updateData['password'] = Hash::make($data['password']);
+        }
+
+        $user->update($updateData);
 
         if (! empty($data['role'])) {
             $user->roles()->sync(Role::where('slug', $data['role'])->pluck('id'));
