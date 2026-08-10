@@ -74,7 +74,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:block">
                     <div className="flex h-16 items-center gap-2 px-6">
                         <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-white">☎</span>
-                        <span className="text-lg font-bold text-slate-900 dark:text-white">TeleCRM</span>
+                        <span className="text-lg font-bold text-slate-900 dark:text-white">Amarizz Crm</span>
                     </div>
                     <nav className="space-y-1 px-3 py-2">
                         {items.map((item) => (

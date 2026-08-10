@@ -19,8 +19,8 @@ export default defineConfig({
             srcDir: 'resources/js',
             filename: 'sw.js',
             manifest: {
-                name: 'TeleCRM — Telecalling CRM',
-                short_name: 'TeleCRM',
+                name: 'Amarizz Crm — Telecalling CRM',
+                short_name: 'Amarizz Crm',
                 description: 'Telecalling CRM for lead, call and task management.',
                 theme_color: '#4f46e5',
                 background_color: '#0f172a',
