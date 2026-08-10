@@ -108,7 +108,7 @@ export default function AuthenticatedLayout({ header, children }) {
                     {/* Topbar */}
                     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:px-6">
                         <div className="flex items-center gap-2">
-                            <span className="text-lg font-bold text-slate-900 dark:text-white lg:hidden">TeleCRM</span>
+                            <span className="text-lg font-bold text-slate-900 dark:text-white lg:hidden">Amarizz Crm</span>
                             {header && <div className="hidden text-sm text-slate-500 sm:block">{header}</div>}
                         </div>
                         <div className="flex items-center gap-1">
