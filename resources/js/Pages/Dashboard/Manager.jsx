@@ -10,12 +10,12 @@ export default function ManagerDashboard({ kpis, pipeline, leaderboard, recent_a
             <Head title="Dashboard" />
             <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                    <KpiCard label="Team leads" value={kpis.team_leads} />
-                    <KpiCard label="Interested" value={kpis.interested} tone="warn" />
-                    <KpiCard label="Converted" value={kpis.converted} tone="good" />
-                    <KpiCard label="Conversion" value={`${kpis.conversion_rate}%`} />
-                    <KpiCard label="Calls today" value={kpis.calls_today} />
-                    <KpiCard label="Overdue tasks" value={kpis.overdue_tasks} tone={kpis.overdue_tasks ? 'bad' : 'default'} />
+                    <KpiCard label="Team leads" value={kpis.team_leads} href="/leads" />
+                    <KpiCard label="Interested" value={kpis.interested} tone="warn" href="/leads?status=interested" />
+                    <KpiCard label="Converted" value={kpis.converted} tone="good" href="/leads?status=converted" />
+                    <KpiCard label="Conversion" value={`${kpis.conversion_rate}%`} href="/performance" />
+                    <KpiCard label="Calls today" value={kpis.calls_today} href="/reports" />
+                    <KpiCard label="Overdue tasks" value={kpis.overdue_tasks} tone={kpis.overdue_tasks ? 'bad' : 'default'} href="/tasks?filter=overdue" />
                 </div>
 
                 <PipelineBar pipeline={pipeline} />

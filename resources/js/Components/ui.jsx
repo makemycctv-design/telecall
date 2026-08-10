@@ -132,18 +132,33 @@ export function EmptyState({ title, description, action, icon = '📭' }) {
 
 // ---- KPI card ------------------------------------------------------------
 
-export function KpiCard({ label, value, hint, tone = 'default' }) {
+export function KpiCard({ label, value, hint, tone = 'default', href }) {
     const tones = {
         default: 'text-slate-900 dark:text-slate-100',
         good: 'text-emerald-600',
         warn: 'text-amber-600',
         bad: 'text-rose-600',
     };
-    return (
-        <Card className="px-5 py-4">
+
+    const content = (
+        <>
             <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
             <p className={cx('mt-1 text-2xl font-semibold', tones[tone])}>{value}</p>
             {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
+        </>
+    );
+
+    if (href) {
+        return (
+            <Link href={href} className="block rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-sm transition hover:shadow-md hover:border-indigo-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-600 cursor-pointer">
+                {content}
+            </Link>
+        );
+    }
+
+    return (
+        <Card className="px-5 py-4">
+            {content}
         </Card>
     );
 }
