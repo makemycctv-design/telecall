@@ -20,67 +20,113 @@ export default function StaffIndex({ staff, roles, managers }) {
                 {staff.data.length === 0 ? (
                     <div className="p-6"><EmptyState title="No staff" description="Add your first team member." /></div>
                 ) : (
-                    <div className="scrollbar-thin overflow-x-auto">
-                        <table className="min-w-full divide-y divide-slate-100 text-sm dark:divide-slate-800">
-                            <thead className="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-800/50">
-                                <tr>
-                                    <th className="px-5 py-3 font-medium">Name</th>
-                                    <th className="px-5 py-3 font-medium">Roles</th>
-                                    <th className="px-5 py-3 font-medium">Leads</th>
-                                    <th className="px-5 py-3 font-medium">Calls</th>
-                                    <th className="px-5 py-3 font-medium">Status</th>
-                                    <th className="px-5 py-3" />
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                {staff.data.map((u) => (
-                                    <tr key={u.id}>
-                                        <td className="px-5 py-3">
-                                            <div className="flex items-center gap-2">
-                                                <Avatar name={u.name} size="sm" />
-                                                <div>
-                                                    <p className="font-medium text-slate-900 dark:text-slate-100">{u.name}</p>
-                                                    <p className="text-xs text-slate-400">{u.email}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-5 py-3">
-                                            <span className="flex flex-wrap gap-1">
-                                                {u.roles.map((r) => <Badge key={r.id} color="blue">{r.slug}</Badge>)}
-                                            </span>
-                                        </td>
-                                        <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.assigned_leads_count}</td>
-                                        <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.call_logs_count}</td>
-                                        <td className="px-5 py-3">
-                                            <Badge color={u.is_active ? 'emerald' : 'rose'}>{u.is_active ? 'Active' : 'Inactive'}</Badge>
-                                        </td>
-                                        <td className="px-5 py-3 text-right">
-                                            <div className="flex items-center justify-end gap-3">
-                                                <button
-                                                    onClick={() => setEditUser(u)}
-                                                    className="text-xs font-medium text-blue-600 hover:underline"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => setPasswordUser(u)}
-                                                    className="text-xs font-medium text-amber-600 hover:underline"
-                                                >
-                                                    Password
-                                                </button>
-                                                <button
-                                                    onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
-                                                    className="text-xs font-medium text-indigo-600 hover:underline"
-                                                >
-                                                    {u.is_active ? 'Deactivate' : 'Activate'}
-                                                </button>
-                                            </div>
-                                        </td>
+                    <>
+                        {/* Desktop table view */}
+                        <div className="hidden md:block scrollbar-thin overflow-x-auto">
+                            <table className="min-w-full divide-y divide-slate-100 text-sm dark:divide-slate-800">
+                                <thead className="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th className="px-5 py-3 font-medium">Name</th>
+                                        <th className="px-5 py-3 font-medium">Roles</th>
+                                        <th className="px-5 py-3 font-medium">Leads</th>
+                                        <th className="px-5 py-3 font-medium">Calls</th>
+                                        <th className="px-5 py-3 font-medium">Status</th>
+                                        <th className="px-5 py-3" />
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    {staff.data.map((u) => (
+                                        <tr key={u.id}>
+                                            <td className="px-5 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar name={u.name} size="sm" />
+                                                    <div>
+                                                        <p className="font-medium text-slate-900 dark:text-slate-100">{u.name}</p>
+                                                        <p className="text-xs text-slate-400">{u.email}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-5 py-3">
+                                                <span className="flex flex-wrap gap-1">
+                                                    {u.roles.map((r) => <Badge key={r.id} color="blue">{r.slug}</Badge>)}
+                                                </span>
+                                            </td>
+                                            <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.assigned_leads_count}</td>
+                                            <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.call_logs_count}</td>
+                                            <td className="px-5 py-3">
+                                                <Badge color={u.is_active ? 'emerald' : 'rose'}>{u.is_active ? 'Active' : 'Inactive'}</Badge>
+                                            </td>
+                                            <td className="px-5 py-3 text-right">
+                                                <div className="flex items-center justify-end gap-3">
+                                                    <button
+                                                        onClick={() => setEditUser(u)}
+                                                        className="text-xs font-medium text-blue-600 hover:underline"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setPasswordUser(u)}
+                                                        className="text-xs font-medium text-amber-600 hover:underline"
+                                                    >
+                                                        Password
+                                                    </button>
+                                                    <button
+                                                        onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
+                                                        className="text-xs font-medium text-indigo-600 hover:underline"
+                                                    >
+                                                        {u.is_active ? 'Deactivate' : 'Activate'}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile card view */}
+                        <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">
+                            {staff.data.map((u) => (
+                                <div key={u.id} className="p-4 space-y-3">
+                                    <div className="flex items-center gap-3">
+                                        <Avatar name={u.name} size="sm" />
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-sm text-slate-900 dark:text-slate-100 truncate">{u.name}</p>
+                                            <p className="text-xs text-slate-400 truncate">{u.email}</p>
+                                        </div>
+                                        <Badge color={u.is_active ? 'emerald' : 'rose'}>{u.is_active ? 'Active' : 'Inactive'}</Badge>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-xs text-slate-500">
+                                        <span className="flex flex-wrap gap-1">
+                                            {u.roles.map((r) => <Badge key={r.id} color="blue">{r.slug}</Badge>)}
+                                        </span>
+                                        <span className="ml-auto">{u.assigned_leads_count} leads</span>
+                                        <span>{u.call_logs_count} calls</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 pt-1 border-t border-slate-100 dark:border-slate-800">
+                                        <button
+                                            onClick={() => setEditUser(u)}
+                                            className="text-xs font-medium text-blue-600 hover:underline"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => setPasswordUser(u)}
+                                            className="text-xs font-medium text-amber-600 hover:underline"
+                                        >
+                                            Password
+                                        </button>
+                                        <button
+                                            onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
+                                            className="ml-auto text-xs font-medium text-indigo-600 hover:underline"
+                                        >
+                                            {u.is_active ? 'Deactivate' : 'Activate'}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </Card>
 
