@@ -126,11 +126,13 @@ export default function AuthenticatedLayout({ header, children }) {
                             </Link>
                             <ThemeToggle />
                             <div className="ml-1 flex items-center gap-2">
-                                <Avatar name={user?.name} size="sm" />
-                                <div className="hidden text-right sm:block">
-                                    <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">{user?.name}</p>
-                                    <p className="text-[11px] capitalize text-slate-400">{user?.primary_role}</p>
-                                </div>
+                                <Link href="/profile" className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-slate-100 dark:hover:bg-slate-800" title="Edit Profile">
+                                    <Avatar name={user?.name} size="sm" />
+                                    <div className="hidden text-right sm:block">
+                                        <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">{user?.name}</p>
+                                        <p className="text-[11px] capitalize text-slate-400">{user?.primary_role}</p>
+                                    </div>
+                                </Link>
                                 <button
                                     onClick={() => router.post('/logout')}
                                     className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-slate-800"
