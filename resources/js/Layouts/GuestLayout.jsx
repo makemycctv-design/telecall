@@ -4,7 +4,7 @@ export default function GuestLayout({ children }) {
             <div className="w-full max-w-md">
                 <div className="mb-6 flex items-center justify-center gap-2 text-white">
                     <span className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-600 text-xl">☎</span>
-                    <span className="text-2xl font-bold">TeleCRM</span>
+                    <span className="text-2xl font-bold">Amarizz Crm</span>
                 </div>
                 <div className="rounded-2xl bg-white p-8 shadow-2xl dark:bg-slate-900">{children}</div>
                 <p className="mt-6 text-center text-xs text-slate-400">

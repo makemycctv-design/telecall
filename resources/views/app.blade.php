@@ -6,10 +6,10 @@
         <meta name="theme-color" content="#4f46e5">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="apple-mobile-web-app-title" content="TeleCRM">
+        <meta name="apple-mobile-web-app-title" content="Amarizz Crm">
         <link rel="apple-touch-icon" href="/icons/icon-192.png">
         <link rel="manifest" href="/manifest.webmanifest">
-        <title inertia>{{ config('app.name', 'TeleCRM') }}</title>
+        <title inertia>{{ config('app.name', 'Amarizz Crm') }}</title>
 
         @routes
         @viteReactRefresh

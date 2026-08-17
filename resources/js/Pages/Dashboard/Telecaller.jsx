@@ -10,12 +10,12 @@ export default function TelecallerDashboard({ kpis, pipeline, due_tasks, pending
             <Head title="Dashboard" />
             <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                    <KpiCard label="My open leads" value={kpis.my_leads} />
-                    <KpiCard label="Calls today" value={kpis.calls_today} />
-                    <KpiCard label="Talk time" value={formatDuration(kpis.talk_time)} />
-                    <KpiCard label="Converted" value={kpis.converted} tone="good" />
-                    <KpiCard label="Due today" value={kpis.due_today} tone="warn" />
-                    <KpiCard label="Overdue" value={kpis.overdue} tone={kpis.overdue ? 'bad' : 'default'} />
+                    <KpiCard label="My open leads" value={kpis.my_leads} href="/leads" />
+                    <KpiCard label="Calls today" value={kpis.calls_today} href="/leads" />
+                    <KpiCard label="Talk time" value={formatDuration(kpis.talk_time)} href="/leads" />
+                    <KpiCard label="Converted" value={kpis.converted} tone="good" href="/leads?status=converted" />
+                    <KpiCard label="Due today" value={kpis.due_today} tone="warn" href="/tasks?filter=due_today" />
+                    <KpiCard label="Overdue" value={kpis.overdue} tone={kpis.overdue ? 'bad' : 'default'} href="/tasks?filter=overdue" />
                 </div>
 
                 <PipelineBar pipeline={pipeline} />

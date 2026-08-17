@@ -10,12 +10,12 @@ export default function AdminDashboard({ kpis, pipeline, leaderboard, recent_act
             <Head title="Dashboard" />
             <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                    <KpiCard label="Total leads" value={kpis.total_leads} />
-                    <KpiCard label="Converted" value={kpis.converted} tone="good" />
-                    <KpiCard label="Conversion" value={`${kpis.conversion_rate}%`} />
-                    <KpiCard label="Active staff" value={kpis.active_staff} />
-                    <KpiCard label="Calls today" value={kpis.calls_today} />
-                    <KpiCard label="Overdue tasks" value={kpis.overdue_tasks} tone={kpis.overdue_tasks ? 'bad' : 'default'} />
+                    <KpiCard label="Total leads" value={kpis.total_leads} href="/leads" />
+                    <KpiCard label="Converted" value={kpis.converted} tone="good" href="/leads?status=converted" />
+                    <KpiCard label="Conversion" value={`${kpis.conversion_rate}%`} href="/performance" />
+                    <KpiCard label="Active staff" value={kpis.active_staff} href="/staff" />
+                    <KpiCard label="Calls today" value={kpis.calls_today} href="/reports" />
+                    <KpiCard label="Overdue tasks" value={kpis.overdue_tasks} tone={kpis.overdue_tasks ? 'bad' : 'default'} href="/tasks?filter=overdue" />
                 </div>
 
                 <PipelineBar pipeline={pipeline} />

@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { registerServiceWorker } from './pwa';
 import { applyStoredTheme } from './theme';
 
-const appName = import.meta.env.VITE_APP_NAME || 'TeleCRM';
+const appName = import.meta.env.VITE_APP_NAME || 'Amarizz Crm';
 
 applyStoredTheme();
 

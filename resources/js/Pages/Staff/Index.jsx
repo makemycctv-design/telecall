@@ -5,6 +5,8 @@ import { Card, CardHeader, Button, Badge, Field, Input, Select, Modal, Avatar, P
 
 export default function StaffIndex({ staff, roles, managers }) {
     const [showCreate, setShowCreate] = useState(false);
+    const [editUser, setEditUser] = useState(null);
+    const [passwordUser, setPasswordUser] = useState(null);
 
     return (
         <AuthenticatedLayout header="Staff management">
@@ -18,59 +20,121 @@ export default function StaffIndex({ staff, roles, managers }) {
                 {staff.data.length === 0 ? (
                     <div className="p-6"><EmptyState title="No staff" description="Add your first team member." /></div>
                 ) : (
-                    <div className="scrollbar-thin overflow-x-auto">
-                        <table className="min-w-full divide-y divide-slate-100 text-sm dark:divide-slate-800">
-                            <thead className="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-800/50">
-                                <tr>
-                                    <th className="px-5 py-3 font-medium">Name</th>
-                                    <th className="px-5 py-3 font-medium">Roles</th>
-                                    <th className="px-5 py-3 font-medium">Leads</th>
-                                    <th className="px-5 py-3 font-medium">Calls</th>
-                                    <th className="px-5 py-3 font-medium">Status</th>
-                                    <th className="px-5 py-3" />
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                {staff.data.map((u) => (
-                                    <tr key={u.id}>
-                                        <td className="px-5 py-3">
-                                            <div className="flex items-center gap-2">
-                                                <Avatar name={u.name} size="sm" />
-                                                <div>
-                                                    <p className="font-medium text-slate-900 dark:text-slate-100">{u.name}</p>
-                                                    <p className="text-xs text-slate-400">{u.email}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-5 py-3">
-                                            <span className="flex flex-wrap gap-1">
-                                                {u.roles.map((r) => <Badge key={r.id} color="blue">{r.slug}</Badge>)}
-                                            </span>
-                                        </td>
-                                        <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.assigned_leads_count}</td>
-                                        <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.call_logs_count}</td>
-                                        <td className="px-5 py-3">
-                                            <Badge color={u.is_active ? 'emerald' : 'rose'}>{u.is_active ? 'Active' : 'Inactive'}</Badge>
-                                        </td>
-                                        <td className="px-5 py-3 text-right">
-                                            <button
-                                                onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
-                                                className="text-xs font-medium text-indigo-600 hover:underline"
-                                            >
-                                                {u.is_active ? 'Deactivate' : 'Activate'}
-                                            </button>
-                                        </td>
+                    <>
+                        {/* Desktop table view */}
+                        <div className="hidden md:block scrollbar-thin overflow-x-auto">
+                            <table className="min-w-full divide-y divide-slate-100 text-sm dark:divide-slate-800">
+                                <thead className="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th className="px-5 py-3 font-medium">Name</th>
+                                        <th className="px-5 py-3 font-medium">Roles</th>
+                                        <th className="px-5 py-3 font-medium">Leads</th>
+                                        <th className="px-5 py-3 font-medium">Calls</th>
+                                        <th className="px-5 py-3 font-medium">Status</th>
+                                        <th className="px-5 py-3" />
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    {staff.data.map((u) => (
+                                        <tr key={u.id}>
+                                            <td className="px-5 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar name={u.name} size="sm" />
+                                                    <div>
+                                                        <p className="font-medium text-slate-900 dark:text-slate-100">{u.name}</p>
+                                                        <p className="text-xs text-slate-400">{u.email}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-5 py-3">
+                                                <span className="flex flex-wrap gap-1">
+                                                    {u.roles.map((r) => <Badge key={r.id} color="blue">{r.slug}</Badge>)}
+                                                </span>
+                                            </td>
+                                            <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.assigned_leads_count}</td>
+                                            <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{u.call_logs_count}</td>
+                                            <td className="px-5 py-3">
+                                                <Badge color={u.is_active ? 'emerald' : 'rose'}>{u.is_active ? 'Active' : 'Inactive'}</Badge>
+                                            </td>
+                                            <td className="px-5 py-3 text-right">
+                                                <div className="flex items-center justify-end gap-3">
+                                                    <button
+                                                        onClick={() => setEditUser(u)}
+                                                        className="text-xs font-medium text-blue-600 hover:underline"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setPasswordUser(u)}
+                                                        className="text-xs font-medium text-amber-600 hover:underline"
+                                                    >
+                                                        Password
+                                                    </button>
+                                                    <button
+                                                        onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
+                                                        className="text-xs font-medium text-indigo-600 hover:underline"
+                                                    >
+                                                        {u.is_active ? 'Deactivate' : 'Activate'}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile card view */}
+                        <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">
+                            {staff.data.map((u) => (
+                                <div key={u.id} className="p-4 space-y-3">
+                                    <div className="flex items-center gap-3">
+                                        <Avatar name={u.name} size="sm" />
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-sm text-slate-900 dark:text-slate-100 truncate">{u.name}</p>
+                                            <p className="text-xs text-slate-400 truncate">{u.email}</p>
+                                        </div>
+                                        <Badge color={u.is_active ? 'emerald' : 'rose'}>{u.is_active ? 'Active' : 'Inactive'}</Badge>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-xs text-slate-500">
+                                        <span className="flex flex-wrap gap-1">
+                                            {u.roles.map((r) => <Badge key={r.id} color="blue">{r.slug}</Badge>)}
+                                        </span>
+                                        <span className="ml-auto">{u.assigned_leads_count} leads</span>
+                                        <span>{u.call_logs_count} calls</span>
+                                    </div>
+                                    <div className="flex items-center gap-3 pt-1 border-t border-slate-100 dark:border-slate-800">
+                                        <button
+                                            onClick={() => setEditUser(u)}
+                                            className="text-xs font-medium text-blue-600 hover:underline"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() => setPasswordUser(u)}
+                                            className="text-xs font-medium text-amber-600 hover:underline"
+                                        >
+                                            Password
+                                        </button>
+                                        <button
+                                            onClick={() => router.patch(`/staff/${u.id}`, { is_active: !u.is_active }, { preserveScroll: true })}
+                                            className="ml-auto text-xs font-medium text-indigo-600 hover:underline"
+                                        >
+                                            {u.is_active ? 'Deactivate' : 'Activate'}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </Card>
 
             <div className="mt-4 flex justify-center"><Pagination links={staff.links} /></div>
 
             <CreateStaffModal open={showCreate} onClose={() => setShowCreate(false)} roles={roles} managers={managers} />
+            <EditStaffModal open={!!editUser} onClose={() => setEditUser(null)} user={editUser} roles={roles} managers={managers} />
+            <ChangePasswordModal open={!!passwordUser} onClose={() => setPasswordUser(null)} user={passwordUser} />
         </AuthenticatedLayout>
     );
 }
@@ -112,6 +176,100 @@ function CreateStaffModal({ open, onClose, roles, managers }) {
                         </Select>
                     </Field>
                 </div>
+            </form>
+        </Modal>
+    );
+}
+
+function EditStaffModal({ open, onClose, user, roles, managers }) {
+    const { data, setData, patch, processing, errors, reset } = useForm({
+        name: '', phone: '', role: '', manager_id: '',
+    });
+
+    const [initialized, setInitialized] = useState(false);
+
+    if (open && user && !initialized) {
+        setData({
+            name: user.name || '',
+            phone: user.phone || '',
+            role: user.roles?.[0]?.slug || 'telecaller',
+            manager_id: user.manager_id || '',
+        });
+        setInitialized(true);
+    }
+
+    if (!open && initialized) {
+        setInitialized(false);
+    }
+
+    const submit = (e) => {
+        e.preventDefault();
+        patch(`/staff/${user.id}`, { preserveScroll: true, onSuccess: () => { reset(); onClose(); } });
+    };
+
+    if (!user) return null;
+
+    return (
+        <Modal
+            open={open}
+            onClose={() => { reset(); onClose(); }}
+            title={`Edit ${user.name}`}
+            footer={<><Button variant="secondary" onClick={() => { reset(); onClose(); }}>Cancel</Button><Button onClick={submit} disabled={processing}>Save changes</Button></>}
+        >
+            <form onSubmit={submit} className="space-y-3">
+                <Field label="Name *" error={errors.name}><Input value={data.name} onChange={(e) => setData('name', e.target.value)} /></Field>
+                <Field label="Phone" error={errors.phone}><Input value={data.phone} onChange={(e) => setData('phone', e.target.value)} /></Field>
+                <div className="grid grid-cols-2 gap-3">
+                    <Field label="Role">
+                        <Select value={data.role} onChange={(e) => setData('role', e.target.value)}>
+                            {roles.map((r) => <option key={r.id} value={r.slug}>{r.name}</option>)}
+                        </Select>
+                    </Field>
+                    <Field label="Manager">
+                        <Select value={data.manager_id} onChange={(e) => setData('manager_id', e.target.value)}>
+                            <option value="">—</option>
+                            {managers.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+                        </Select>
+                    </Field>
+                </div>
+            </form>
+        </Modal>
+    );
+}
+
+
+function ChangePasswordModal({ open, onClose, user }) {
+    const { data, setData, patch, processing, errors, reset } = useForm({
+        password: '', password_confirmation: '',
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+        patch(`/staff/${user.id}`, {
+            preserveScroll: true,
+            onSuccess: () => { reset(); onClose(); },
+        });
+    };
+
+    if (!user) return null;
+
+    return (
+        <Modal
+            open={open}
+            onClose={() => { reset(); onClose(); }}
+            title={`Change password for ${user.name}`}
+            footer={<><Button variant="secondary" onClick={() => { reset(); onClose(); }}>Cancel</Button><Button onClick={submit} disabled={processing || data.password.length < 8}>Update password</Button></>}
+        >
+            <form onSubmit={submit} className="space-y-3">
+                <Field label="New password *" error={errors.password}>
+                    <Input type="password" value={data.password} onChange={(e) => setData('password', e.target.value)} placeholder="Min 8 characters" />
+                </Field>
+                <Field label="Confirm password">
+                    <Input type="password" value={data.password_confirmation} onChange={(e) => setData('password_confirmation', e.target.value)} placeholder="Re-type password" />
+                </Field>
+                {data.password && data.password_confirmation && data.password !== data.password_confirmation && (
+                    <p className="text-xs text-rose-600">Passwords do not match</p>
+                )}
             </form>
         </Modal>
     );
