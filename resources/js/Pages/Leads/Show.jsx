@@ -37,16 +37,16 @@ export default function LeadShow({ lead, timeline, options, callOutcomes }) {
                 {/* Left: profile + actions */}
                 <div className="space-y-6">
                     <Card>
-                        <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
+                        <div className="flex items-center gap-3 border-b border-slate-100 px-4 py-3 dark:border-slate-800 sm:px-5 sm:py-4">
                             <Avatar name={lead.name} size="lg" />
-                            <div>
-                                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{lead.name}</h2>
-                                <p className="text-sm text-slate-500">{lead.company || 'No company'}</p>
+                            <div className="min-w-0">
+                                <h2 className="truncate text-base font-semibold text-slate-900 dark:text-slate-100 sm:text-lg">{lead.name}</h2>
+                                <p className="truncate text-sm text-slate-500">{lead.company || 'No company'}</p>
                             </div>
                         </div>
-                        <dl className="space-y-2 px-5 py-4 text-sm">
+                        <dl className="space-y-2 px-4 py-3 text-sm sm:px-5 sm:py-4">
                             <Row label="Phone"><a href={`tel:${lead.phone}`} className="font-medium text-indigo-600">{lead.phone}</a></Row>
-                            {lead.email && <Row label="Email">{lead.email}</Row>}
+                            {lead.email && <Row label="Email"><span className="truncate">{lead.email}</span></Row>}
                             {lead.city && <Row label="City">{lead.city}</Row>}
                             {lead.source && <Row label="Source">{lead.source.name}</Row>}
                             {lead.deal_value && <Row label="Deal value">{formatCurrency(lead.deal_value)}</Row>}
@@ -61,7 +61,7 @@ export default function LeadShow({ lead, timeline, options, callOutcomes }) {
                         </dl>
                     </Card>
 
-                    <Card className="p-5">
+                    <Card className="p-4 sm:p-5">
                         <Field label="Status" className="mb-3">
                             <Select value={status} onChange={(e) => changeStatus(e.target.value)}>
                                 {options.statuses.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
@@ -82,13 +82,13 @@ export default function LeadShow({ lead, timeline, options, callOutcomes }) {
                 <div className="space-y-6">
                     <Card>
                         <CardHeader title="Log a call" subtitle="Works offline — syncs later" />
-                        <div className="px-5 py-4">
+                        <div className="px-4 py-3 sm:px-5 sm:py-4">
                             <CallLogForm lead={lead} outcomes={callOutcomes} />
                         </div>
                     </Card>
 
                     {lead.next_follow_up_at && (
-                        <Card className="px-5 py-4">
+                        <Card className="px-4 py-3 sm:px-5 sm:py-4">
                             <p className="text-xs uppercase tracking-wide text-slate-400">Next follow-up</p>
                             <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
                                 {formatDateTime(lead.next_follow_up_at)}
@@ -102,14 +102,14 @@ export default function LeadShow({ lead, timeline, options, callOutcomes }) {
                 <div>
                     <Card>
                         <CardHeader title="Activity timeline" subtitle={`${timeline.length} events`} />
-                        <div className="px-5 py-4">
+                        <div className="px-4 py-3 sm:px-5 sm:py-4">
                             {timeline.length === 0 ? (
                                 <EmptyState icon="🕓" title="No activity yet" description="Logged calls and status changes will appear here." />
                             ) : (
-                                <ol className="relative space-y-5 border-l border-slate-200 pl-5 dark:border-slate-700">
+                                <ol className="relative space-y-4 border-l border-slate-200 pl-4 dark:border-slate-700 sm:space-y-5 sm:pl-5">
                                     {timeline.map((event, i) => (
                                         <li key={i} className="relative">
-                                            <span className={`absolute -left-[26px] top-1 h-3 w-3 rounded-full ring-4 ring-white dark:ring-slate-900 ${dotColor(event.type)}`} />
+                                            <span className={`absolute -left-[22px] top-1 h-2.5 w-2.5 rounded-full ring-4 ring-white dark:ring-slate-900 sm:-left-[26px] sm:h-3 sm:w-3 ${dotColor(event.type)}`} />
                                             <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{event.title}</p>
                                             {event.body && <p className="text-xs text-slate-500">{event.body}</p>}
                                             <p className="mt-0.5 text-[11px] text-slate-400">
@@ -131,9 +131,9 @@ export default function LeadShow({ lead, timeline, options, callOutcomes }) {
 
 function Row({ label, children }) {
     return (
-        <div className="flex items-center justify-between gap-3">
-            <dt className="text-slate-400">{label}</dt>
-            <dd className="text-right text-slate-700 dark:text-slate-300">{children}</dd>
+        <div className="flex items-center justify-between gap-2 sm:gap-3">
+            <dt className="shrink-0 text-slate-400">{label}</dt>
+            <dd className="min-w-0 text-right text-slate-700 dark:text-slate-300">{children}</dd>
         </div>
     );
 }
