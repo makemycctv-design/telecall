@@ -11,13 +11,15 @@ const NAV = [
     { label: 'Dashboard', href: '/dashboard', route: 'dashboard', icon: '🏠', roles: ['admin', 'manager', 'telecaller'] },
     { label: 'Leads', href: '/leads', route: 'leads.index', icon: '👥', roles: ['admin', 'manager', 'telecaller'] },
     { label: 'Tasks', href: '/tasks', route: 'tasks.index', icon: '✅', roles: ['admin', 'manager', 'telecaller'] },
+    { label: 'Projects', href: '/reports', route: 'reports.index', icon: '📁', roles: ['admin', 'manager'] },
     { label: 'Reports', href: '/reports', route: 'reports.index', icon: '📊', roles: ['admin', 'manager'] },
     { label: 'Performance', href: '/performance', route: 'performance.index', icon: '📈', roles: ['admin', 'manager'] },
     { label: 'Import', href: '/import', route: 'import.create', icon: '📥', roles: ['admin', 'manager'] },
-    { label: 'Staff', href: '/staff', route: 'staff.index', icon: '⚙️', roles: ['admin'] },
+    { label: 'Staff', href: '/staff', route: 'staff.index', icon: '👤', roles: ['admin'] },
+    { label: 'Sales', href: '/reports', route: 'reports.index', icon: '💰', roles: ['admin', 'manager'] },
 ];
 
-// Compact set for the mobile bottom bar (telecaller-first).
+// Bottom bar for mobile - key actions only
 const MOBILE_NAV = [
     { label: 'Home', href: '/dashboard', icon: '🏠' },
     { label: 'Leads', href: '/leads', icon: '👥' },
@@ -38,6 +40,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const flash = props.flash || {};
     const path = useCurrentPath();
     const [toast, setToast] = useState(null);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const items = NAV.filter((i) => i.roles.some((r) => roles.includes(r)));
 
@@ -53,6 +56,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const handleInstallClick = async () => {
         const accepted = await promptInstall();
         if (accepted) setCanInstall(false);
+        setMobileMenuOpen(false);
     };
 
     useEffect(() => {
@@ -63,6 +67,11 @@ export default function AuthenticatedLayout({ header, children }) {
         }
     }, [flash.success, flash.error]);
 
+    // Close mobile menu on route change
+    useEffect(() => {
+        setMobileMenuOpen(false);
+    }, [path]);
+
     const isActive = (item) => path === item.href || path.startsWith(item.href + '/');
 
     return (
@@ -70,62 +79,74 @@ export default function AuthenticatedLayout({ header, children }) {
             <OfflineBanner />
 
             <div className="flex">
-                {/* Desktop sidebar */}
+                {/* Desktop sidebar - only visible on lg+ */}
                 <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:block">
-                    <div className="flex h-16 items-center gap-2 px-6">
-                        <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-white">☎</span>
-                        <span className="text-lg font-bold text-slate-900 dark:text-white">TeleCRM</span>
+                    <div className="sticky top-0">
+                        <div className="flex h-16 items-center gap-2 px-6">
+                            <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-white">☎</span>
+                            <span className="text-lg font-bold text-slate-900 dark:text-white">TeleCRM</span>
+                        </div>
+                        <nav className="space-y-1 px-3 py-2">
+                            {items.map((item) => (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                                        isActive(item)
+                                            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                                            : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                                    }`}
+                                >
+                                    <span>{item.icon}</span>
+                                    {item.label}
+                                </Link>
+                            ))}
+                            {canInstall && (
+                                <button
+                                    onClick={handleInstallClick}
+                                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-indigo-600 transition hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950"
+                                >
+                                    <span>📲</span>
+                                    Install App
+                                </button>
+                            )}
+                        </nav>
                     </div>
-                    <nav className="space-y-1 px-3 py-2">
-                        {items.map((item) => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                                    isActive(item)
-                                        ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
-                                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
-                                }`}
-                            >
-                                <span>{item.icon}</span>
-                                {item.label}
-                            </Link>
-                        ))}
-                        {canInstall && (
-                            <button
-                                onClick={handleInstallClick}
-                                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-indigo-600 transition hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950"
-                            >
-                                <span>📲</span>
-                                Install App
-                            </button>
-                        )}
-                    </nav>
                 </aside>
 
                 {/* Main column */}
                 <div className="flex min-h-screen flex-1 flex-col">
-                    {/* Topbar */}
-                    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:px-6">
+                    {/* Mobile Top Bar */}
+                    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-3 dark:border-slate-800 dark:bg-slate-900 sm:h-16 sm:px-6">
                         <div className="flex items-center gap-2">
-                            <span className="text-lg font-bold text-slate-900 dark:text-white lg:hidden">TeleCRM</span>
-                            {header && <div className="hidden text-sm text-slate-500 sm:block">{header}</div>}
+                            {/* Hamburger menu button - mobile only */}
+                            <button
+                                onClick={() => setMobileMenuOpen(true)}
+                                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 lg:hidden"
+                                aria-label="Open menu"
+                            >
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </button>
+                            <span className="text-base font-bold text-slate-900 dark:text-white sm:text-lg lg:hidden">TeleCRM</span>
+                            {header && <div className="hidden text-sm text-slate-500 lg:block">{header}</div>}
                         </div>
                         <div className="flex items-center gap-1">
                             <Link
                                 href="/notifications"
-                                className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                                className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
                                 aria-label="Notifications"
                             >
-                                🔔
+                                <span className="text-base">🔔</span>
                                 {unread > 0 && (
-                                    <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-rose-600 px-1 text-[10px] font-bold text-white">
+                                    <span className="absolute right-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-rose-600 px-1 text-[9px] font-bold text-white">
                                         {unread > 9 ? '9+' : unread}
                                     </span>
                                 )}
                             </Link>
                             <ThemeToggle />
-                            <div className="ml-1 flex items-center gap-2">
+                            <div className="ml-1 flex items-center gap-1.5">
                                 <Avatar name={user?.name} size="sm" />
                                 <div className="hidden text-right sm:block">
                                     <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">{user?.name}</p>
@@ -133,7 +154,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </div>
                                 <button
                                     onClick={() => router.post('/logout')}
-                                    className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-slate-800"
+                                    className="hidden rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-slate-800 sm:block"
                                     title="Log out"
                                 >
                                     ⎋
@@ -142,9 +163,91 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
                     </header>
 
-                    <main className="flex-1 px-4 pb-24 pt-6 sm:px-6 lg:pb-8">{children}</main>
+                    <main className="flex-1 px-3 pb-20 pt-4 sm:px-6 sm:pt-6 lg:pb-8">{children}</main>
                 </div>
             </div>
+
+            {/* Mobile slide-out drawer menu */}
+            {mobileMenuOpen && (
+                <div className="fixed inset-0 z-50 lg:hidden">
+                    {/* Backdrop */}
+                    <div
+                        className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+                        onClick={() => setMobileMenuOpen(false)}
+                    />
+                    {/* Drawer */}
+                    <aside className="absolute inset-y-0 left-0 w-72 max-w-[85vw] overflow-y-auto bg-white shadow-xl dark:bg-slate-900">
+                        {/* Drawer header */}
+                        <div className="flex h-14 items-center justify-between border-b border-slate-100 px-4 dark:border-slate-800">
+                            <div className="flex items-center gap-2">
+                                <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-white">☎</span>
+                                <span className="text-base font-bold text-slate-900 dark:text-white">TeleCRM</span>
+                            </div>
+                            <button
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                aria-label="Close menu"
+                            >
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* User info */}
+                        <div className="border-b border-slate-100 px-4 py-3 dark:border-slate-800">
+                            <div className="flex items-center gap-3">
+                                <Avatar name={user?.name} size="md" />
+                                <div className="min-w-0 flex-1">
+                                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{user?.name}</p>
+                                    <p className="text-xs capitalize text-slate-400">{user?.primary_role}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Navigation items */}
+                        <nav className="space-y-0.5 px-3 py-3">
+                            {items.map((item) => (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                                        isActive(item)
+                                            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                                            : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800'
+                                    }`}
+                                >
+                                    <span className="text-lg">{item.icon}</span>
+                                    {item.label}
+                                </Link>
+                            ))}
+                        </nav>
+
+                        {/* Drawer footer actions */}
+                        <div className="border-t border-slate-100 px-3 py-3 dark:border-slate-800">
+                            {canInstall && (
+                                <button
+                                    onClick={handleInstallClick}
+                                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950"
+                                >
+                                    <span className="text-lg">📲</span>
+                                    Install App
+                                </button>
+                            )}
+                            <button
+                                onClick={() => {
+                                    setMobileMenuOpen(false);
+                                    router.post('/logout');
+                                }}
+                                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950"
+                            >
+                                <span className="text-lg">🚪</span>
+                                Log out
+                            </button>
+                        </div>
+                    </aside>
+                </div>
+            )}
 
             {/* Mobile bottom navigation */}
             <nav className="pb-safe fixed inset-x-0 bottom-0 z-30 flex border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:hidden">
@@ -152,16 +255,16 @@ export default function AuthenticatedLayout({ header, children }) {
                     <Link
                         key={item.href}
                         href={item.href}
-                        className={`relative flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium ${
+                        className={`relative flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-medium sm:py-2.5 sm:text-[11px] ${
                             path.startsWith(item.href)
                                 ? 'text-indigo-600 dark:text-indigo-400'
                                 : 'text-slate-500 dark:text-slate-400'
                         }`}
                     >
-                        <span className="text-lg">{item.icon}</span>
+                        <span className="text-lg sm:text-xl">{item.icon}</span>
                         {item.label}
                         {item.href === '/notifications' && unread > 0 && (
-                            <span className="absolute right-6 top-1 h-2 w-2 rounded-full bg-rose-600" />
+                            <span className="absolute right-1/4 top-1 h-2 w-2 rounded-full bg-rose-600" />
                         )}
                     </Link>
                 ))}
@@ -172,7 +275,7 @@ export default function AuthenticatedLayout({ header, children }) {
             {/* Flash toast */}
             {toast && (
                 <div
-                    className={`fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-lg lg:bottom-6 ${
+                    className={`fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-lg lg:bottom-6 ${
                         toast.type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'
                     }`}
                 >
