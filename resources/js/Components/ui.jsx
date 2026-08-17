@@ -21,7 +21,7 @@ export function Button({ variant = 'primary', className, as: As = 'button', ...p
     return (
         <As
             className={cx(
-                'inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60',
+                'inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60',
                 BUTTON_VARIANTS[variant],
                 className,
             )}
@@ -49,8 +49,8 @@ export function CardHeader({ title, subtitle, action }) {
     return (
         <div className="flex items-start justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
             <div>
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
-                {subtitle && <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>}
+                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
+                {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
             </div>
             {action}
         </div>
@@ -63,7 +63,7 @@ export function Badge({ color = 'slate', children }) {
     return (
         <span
             className={cx(
-                'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset',
+                'inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-medium ring-1 ring-inset',
                 badgeClass(color),
             )}
         >
@@ -82,15 +82,15 @@ export function StatusBadge({ status }) {
 export function Field({ label, error, children, className }) {
     return (
         <label className={cx('block', className)}>
-            {label && <span className="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">{label}</span>}
+            {label && <span className="mb-1 block text-sm font-medium text-slate-600 dark:text-slate-400">{label}</span>}
             {children}
-            {error && <span className="mt-1 block text-xs text-rose-600">{error}</span>}
+            {error && <span className="mt-1 block text-sm text-rose-600">{error}</span>}
         </label>
     );
 }
 
 const CONTROL =
-    'w-full rounded-lg border-0 bg-white px-3 py-2 text-sm text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-600 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700';
+    'w-full rounded-lg border-0 bg-white px-3 py-2.5 text-base text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-600 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700';
 
 export function Input({ className, ...props }) {
     return <input className={cx(CONTROL, className)} {...props} />;
@@ -142,9 +142,9 @@ export function KpiCard({ label, value, hint, tone = 'default', href }) {
 
     const content = (
         <>
-            <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-            <p className={cx('mt-1 text-2xl font-semibold', tones[tone])}>{value}</p>
-            {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
+            <p className="text-sm font-medium uppercase tracking-wide text-slate-500">{label}</p>
+            <p className={cx('mt-1 text-3xl font-semibold', tones[tone])}>{value}</p>
+            {hint && <p className="mt-1 text-sm text-slate-400">{hint}</p>}
         </>
     );
 

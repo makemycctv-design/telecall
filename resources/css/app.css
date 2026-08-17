@@ -8,6 +8,13 @@
 
 html {
     -webkit-tap-highlight-color: transparent;
+    font-size: 16px;
+}
+
+/* Bump base font size on mobile for readability */
+body {
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
 /* Respect iOS safe areas for the mobile bottom navigation. */
