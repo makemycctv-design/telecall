@@ -17,14 +17,6 @@ const NAV = [
     { label: 'Staff', href: '/staff', route: 'staff.index', icon: '⚙️', roles: ['admin'] },
 ];
 
-// Compact set for the mobile bottom bar (telecaller-first).
-const MOBILE_NAV = [
-    { label: 'Home', href: '/dashboard', icon: '🏠' },
-    { label: 'Leads', href: '/leads', icon: '👥' },
-    { label: 'Tasks', href: '/tasks', icon: '✅' },
-    { label: 'Alerts', href: '/notifications', icon: '🔔' },
-];
-
 function useCurrentPath() {
     const { url } = usePage();
     return url.split('?')[0];
@@ -38,6 +30,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const flash = props.flash || {};
     const path = useCurrentPath();
     const [toast, setToast] = useState(null);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const items = NAV.filter((i) => i.roles.some((r) => roles.includes(r)));
 
@@ -62,6 +55,11 @@ export default function AuthenticatedLayout({ header, children }) {
             return () => clearTimeout(t);
         }
     }, [flash.success, flash.error]);
+
+    // Close mobile menu on navigation
+    useEffect(() => {
+        setMobileMenuOpen(false);
+    }, [path]);
 
     const isActive = (item) => path === item.href || path.startsWith(item.href + '/');
 
@@ -103,11 +101,103 @@ export default function AuthenticatedLayout({ header, children }) {
                     </nav>
                 </aside>
 
+                {/* Mobile sidebar overlay */}
+                {mobileMenuOpen && (
+                    <div className="fixed inset-0 z-40 lg:hidden">
+                        <div className="fixed inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
+                        <aside className="fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-xl dark:bg-slate-900">
+                            <div className="flex h-16 items-center justify-between gap-2 px-6">
+                                <div className="flex items-center gap-2">
+                                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-white">☎</span>
+                                    <span className="text-lg font-bold text-slate-900 dark:text-white">Amarizz Crm</span>
+                                </div>
+                                <button
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            <nav className="space-y-1 px-3 py-2">
+                                {items.map((item) => (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                                            isActive(item)
+                                                ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                                                : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                                        }`}
+                                    >
+                                        <span>{item.icon}</span>
+                                        {item.label}
+                                    </Link>
+                                ))}
+                                <Link
+                                    href="/notifications"
+                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                                        path === '/notifications'
+                                            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                                            : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                                    }`}
+                                >
+                                    <span>🔔</span>
+                                    Notifications
+                                    {unread > 0 && <span className="ml-auto rounded-full bg-rose-600 px-1.5 py-0.5 text-[10px] font-bold text-white">{unread}</span>}
+                                </Link>
+                                <Link
+                                    href="/profile"
+                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                                        path === '/profile'
+                                            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
+                                            : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                                    }`}
+                                >
+                                    <span>👤</span>
+                                    My Profile
+                                </Link>
+                                {canInstall && (
+                                    <button
+                                        onClick={handleInstallClick}
+                                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-indigo-600 transition hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950"
+                                    >
+                                        <span>📲</span>
+                                        Install App
+                                    </button>
+                                )}
+                            </nav>
+                            <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 p-4 dark:border-slate-800">
+                                <div className="flex items-center gap-3">
+                                    <Avatar name={user?.name} size="sm" />
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{user?.name}</p>
+                                        <p className="text-xs capitalize text-slate-400">{user?.primary_role}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => router.post('/logout')}
+                                        className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-slate-800"
+                                        title="Log out"
+                                    >
+                                        ⎋
+                                    </button>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                )}
+
                 {/* Main column */}
                 <div className="flex min-h-screen flex-1 flex-col">
                     {/* Topbar */}
                     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-4 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80 sm:px-6">
                         <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setMobileMenuOpen(true)}
+                                className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
+                                aria-label="Open menu"
+                            >
+                                ☰
+                            </button>
                             <span className="text-lg font-bold text-slate-900 dark:text-white lg:hidden">Amarizz Crm</span>
                             {header && <div className="hidden text-sm text-slate-500 sm:block">{header}</div>}
                         </div>
@@ -144,37 +234,16 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
                     </header>
 
-                    <main className="flex-1 px-4 pb-24 pt-6 sm:px-6 lg:pb-8">{children}</main>
+                    <main className="flex-1 px-4 pb-8 pt-6 sm:px-6 lg:pb-8">{children}</main>
                 </div>
             </div>
-
-            {/* Mobile bottom navigation */}
-            <nav className="pb-safe fixed inset-x-0 bottom-0 z-30 flex border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 lg:hidden">
-                {MOBILE_NAV.map((item) => (
-                    <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`relative flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[11px] font-medium ${
-                            path.startsWith(item.href)
-                                ? 'text-indigo-600 dark:text-indigo-400'
-                                : 'text-slate-500 dark:text-slate-400'
-                        }`}
-                    >
-                        <span className="text-lg">{item.icon}</span>
-                        {item.label}
-                        {item.href === '/notifications' && unread > 0 && (
-                            <span className="absolute right-6 top-1 h-2 w-2 rounded-full bg-rose-600" />
-                        )}
-                    </Link>
-                ))}
-            </nav>
 
             <InstallPrompt />
 
             {/* Flash toast */}
             {toast && (
                 <div
-                    className={`fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-lg lg:bottom-6 ${
+                    className={`fixed bottom-8 left-1/2 z-50 -translate-x-1/2 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-lg ${
                         toast.type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'
                     }`}
                 >
