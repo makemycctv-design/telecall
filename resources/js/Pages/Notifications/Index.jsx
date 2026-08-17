@@ -26,11 +26,11 @@ export default function NotificationsIndex({ notifications }) {
     return (
         <AuthenticatedLayout header="Notifications">
             <Head title="Notifications" />
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Notifications</h1>
                 <div className="flex gap-2">
-                    <Button variant="secondary" onClick={enablePush}>🔔 Enable push</Button>
-                    <Button variant="secondary" onClick={() => router.post('/notifications/read-all', {}, { preserveScroll: true })}>
+                    <Button variant="secondary" onClick={enablePush} className="text-xs sm:text-sm">🔔 Push</Button>
+                    <Button variant="secondary" onClick={() => router.post('/notifications/read-all', {}, { preserveScroll: true })} className="text-xs sm:text-sm">
                         Mark all read
                     </Button>
                 </div>
@@ -44,26 +44,26 @@ export default function NotificationsIndex({ notifications }) {
                         {notifications.data.map((n) => (
                             <li
                                 key={n.id}
-                                className={`flex items-start gap-3 px-5 py-4 ${n.read_at ? '' : 'bg-indigo-50/40 dark:bg-indigo-950/20'}`}
+                                className={`flex items-start gap-3 px-4 py-3 sm:px-5 sm:py-4 ${n.read_at ? '' : 'bg-indigo-50/40 dark:bg-indigo-950/20'}`}
                             >
-                                <span className="text-xl">{ICONS[n.type] || '🔔'}</span>
-                                <div className="flex-1">
+                                <span className="text-lg sm:text-xl shrink-0">{ICONS[n.type] || '🔔'}</span>
+                                <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{n.title}</p>
-                                    {n.body && <p className="text-sm text-slate-500">{n.body}</p>}
-                                    <p className="mt-0.5 text-xs text-slate-400">{fromNow(n.created_at)}</p>
-                                </div>
-                                <div className="flex flex-col items-end gap-1">
-                                    {n.action_url && (
-                                        <Link href={n.action_url} className="text-xs font-medium text-indigo-600 hover:underline">Open</Link>
-                                    )}
-                                    {!n.read_at && (
-                                        <button
-                                            onClick={() => router.post(`/notifications/${n.id}/read`, {}, { preserveScroll: true })}
-                                            className="text-xs text-slate-400 hover:text-slate-600"
-                                        >
-                                            Mark read
-                                        </button>
-                                    )}
+                                    {n.body && <p className="text-xs sm:text-sm text-slate-500 line-clamp-2">{n.body}</p>}
+                                    <div className="mt-1 flex items-center gap-3">
+                                        <span className="text-xs text-slate-400">{fromNow(n.created_at)}</span>
+                                        {n.action_url && (
+                                            <Link href={n.action_url} className="text-xs font-medium text-indigo-600 hover:underline">Open</Link>
+                                        )}
+                                        {!n.read_at && (
+                                            <button
+                                                onClick={() => router.post(`/notifications/${n.id}/read`, {}, { preserveScroll: true })}
+                                                className="text-xs text-slate-400 hover:text-slate-600"
+                                            >
+                                                Mark read
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </li>
                         ))}

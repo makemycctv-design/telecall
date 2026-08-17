@@ -55,36 +55,57 @@ export default function Performance({ byStaff, trend, totals, range }) {
                 {byStaff.length === 0 ? (
                     <div className="p-6"><EmptyState title="No staff metrics" description="Metrics are aggregated hourly and nightly." /></div>
                 ) : (
-                    <div className="scrollbar-thin overflow-x-auto">
-                        <table className="min-w-full divide-y divide-slate-100 text-sm dark:divide-slate-800">
-                            <thead className="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-800/50">
-                                <tr>
-                                    <th className="px-4 py-2 font-medium">Staff</th>
-                                    <th className="px-4 py-2 font-medium">Calls</th>
-                                    <th className="px-4 py-2 font-medium">Connect %</th>
-                                    <th className="px-4 py-2 font-medium">Talk time</th>
-                                    <th className="px-4 py-2 font-medium">Follow-ups</th>
-                                    <th className="px-4 py-2 font-medium">Interested</th>
-                                    <th className="px-4 py-2 font-medium">Converted</th>
-                                    <th className="px-4 py-2 font-medium">Overdue</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                {byStaff.map((s) => (
-                                    <tr key={s.user_id} className="text-slate-700 dark:text-slate-300">
-                                        <td className="px-4 py-2 font-medium text-slate-900 dark:text-slate-100">{s.name}</td>
-                                        <td className="px-4 py-2">{s.calls_made}</td>
-                                        <td className="px-4 py-2">{s.connect_rate}%</td>
-                                        <td className="px-4 py-2">{formatDuration(s.talk_time_seconds)}</td>
-                                        <td className="px-4 py-2">{s.follow_ups_completed}</td>
-                                        <td className="px-4 py-2">{s.leads_interested}</td>
-                                        <td className="px-4 py-2 font-semibold text-emerald-600">{s.leads_converted}</td>
-                                        <td className={`px-4 py-2 ${s.tasks_overdue ? 'text-rose-600' : ''}`}>{s.tasks_overdue}</td>
+                    <>
+                        {/* Desktop table */}
+                        <div className="hidden md:block scrollbar-thin overflow-x-auto">
+                            <table className="min-w-full divide-y divide-slate-100 text-sm dark:divide-slate-800">
+                                <thead className="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th className="px-4 py-2 font-medium">Staff</th>
+                                        <th className="px-4 py-2 font-medium">Calls</th>
+                                        <th className="px-4 py-2 font-medium">Connect %</th>
+                                        <th className="px-4 py-2 font-medium">Talk time</th>
+                                        <th className="px-4 py-2 font-medium">Follow-ups</th>
+                                        <th className="px-4 py-2 font-medium">Interested</th>
+                                        <th className="px-4 py-2 font-medium">Converted</th>
+                                        <th className="px-4 py-2 font-medium">Overdue</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    {byStaff.map((s) => (
+                                        <tr key={s.user_id} className="text-slate-700 dark:text-slate-300">
+                                            <td className="px-4 py-2 font-medium text-slate-900 dark:text-slate-100">{s.name}</td>
+                                            <td className="px-4 py-2">{s.calls_made}</td>
+                                            <td className="px-4 py-2">{s.connect_rate}%</td>
+                                            <td className="px-4 py-2">{formatDuration(s.talk_time_seconds)}</td>
+                                            <td className="px-4 py-2">{s.follow_ups_completed}</td>
+                                            <td className="px-4 py-2">{s.leads_interested}</td>
+                                            <td className="px-4 py-2 font-semibold text-emerald-600">{s.leads_converted}</td>
+                                            <td className={`px-4 py-2 ${s.tasks_overdue ? 'text-rose-600' : ''}`}>{s.tasks_overdue}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile card view */}
+                        <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">
+                            {byStaff.map((s) => (
+                                <div key={s.user_id} className="p-4 space-y-2">
+                                    <p className="font-medium text-sm text-slate-900 dark:text-slate-100">{s.name}</p>
+                                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                                        <div className="flex justify-between"><span className="text-slate-500">Calls</span><span className="font-medium text-slate-700 dark:text-slate-300">{s.calls_made}</span></div>
+                                        <div className="flex justify-between"><span className="text-slate-500">Connect</span><span className="font-medium text-slate-700 dark:text-slate-300">{s.connect_rate}%</span></div>
+                                        <div className="flex justify-between"><span className="text-slate-500">Talk time</span><span className="font-medium text-slate-700 dark:text-slate-300">{formatDuration(s.talk_time_seconds)}</span></div>
+                                        <div className="flex justify-between"><span className="text-slate-500">Follow-ups</span><span className="font-medium text-slate-700 dark:text-slate-300">{s.follow_ups_completed}</span></div>
+                                        <div className="flex justify-between"><span className="text-slate-500">Interested</span><span className="font-medium text-slate-700 dark:text-slate-300">{s.leads_interested}</span></div>
+                                        <div className="flex justify-between"><span className="text-slate-500">Converted</span><span className="font-semibold text-emerald-600">{s.leads_converted}</span></div>
+                                        <div className="flex justify-between"><span className="text-slate-500">Overdue</span><span className={`font-medium ${s.tasks_overdue ? 'text-rose-600' : 'text-slate-700 dark:text-slate-300'}`}>{s.tasks_overdue}</span></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </Card>
         </AuthenticatedLayout>

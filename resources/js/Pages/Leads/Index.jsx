@@ -80,66 +80,107 @@ export default function LeadsIndex({ leads, filters, options }) {
                         <EmptyState title="No leads found" description="Try adjusting your filters or create a new lead." />
                     </div>
                 ) : (
-                    <div className="scrollbar-thin overflow-x-auto">
-                        <table className="min-w-full divide-y divide-slate-100 text-sm dark:divide-slate-800">
-                            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-800/50">
-                                <tr>
-                                    <th className="px-5 py-3 font-medium">Lead</th>
-                                    <th className="px-5 py-3 font-medium">Status</th>
-                                    <th className="px-5 py-3 font-medium">Priority</th>
-                                    <th className="px-5 py-3 font-medium">Assignee</th>
-                                    <th className="px-5 py-3 font-medium">Follow-up</th>
-                                    <th className="px-5 py-3 font-medium">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                {leads.data.map((lead) => (
-                                    <tr
-                                        key={lead.id}
-                                        className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                                        onClick={() => router.visit(`/leads/${lead.id}`)}
-                                    >
-                                        <td className="px-5 py-3">
-                                            <p className="font-medium text-slate-900 dark:text-slate-100">{lead.name}</p>
-                                            <p className="text-xs text-slate-400">{lead.phone}{lead.company ? ` · ${lead.company}` : ''}</p>
-                                        </td>
-                                        <td className="px-5 py-3">
-                                            <StatusBadge status={{ label: statusLabel(lead.status, options), color: statusColor(lead.status, options) }} />
-                                        </td>
-                                        <td className="px-5 py-3">
-                                            <Badge color={priorityColor(lead.priority, options)}>{lead.priority}</Badge>
-                                        </td>
-                                        <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{lead.assignee?.name || '—'}</td>
-                                        <td className="px-5 py-3 text-slate-500">{lead.next_follow_up_at ? formatDateTime(lead.next_follow_up_at) : '—'}</td>
-                                        <td className="px-5 py-3">
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setEditingLead(lead);
-                                                    }}
-                                                    className="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        if (confirm('Are you sure you want to delete this lead?')) {
-                                                            router.delete(`/leads/${lead.id}`);
-                                                        }
-                                                    }}
-                                                    className="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </td>
+                    <>
+                        {/* Desktop table */}
+                        <div className="hidden md:block scrollbar-thin overflow-x-auto">
+                            <table className="min-w-full divide-y divide-slate-100 text-sm dark:divide-slate-800">
+                                <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-800/50">
+                                    <tr>
+                                        <th className="px-5 py-3 font-medium">Lead</th>
+                                        <th className="px-5 py-3 font-medium">Status</th>
+                                        <th className="px-5 py-3 font-medium">Priority</th>
+                                        <th className="px-5 py-3 font-medium">Assignee</th>
+                                        <th className="px-5 py-3 font-medium">Follow-up</th>
+                                        <th className="px-5 py-3 font-medium">Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                    {leads.data.map((lead) => (
+                                        <tr
+                                            key={lead.id}
+                                            className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                                            onClick={() => router.visit(`/leads/${lead.id}`)}
+                                        >
+                                            <td className="px-5 py-3">
+                                                <p className="font-medium text-slate-900 dark:text-slate-100">{lead.name}</p>
+                                                <p className="text-xs text-slate-400">{lead.phone}{lead.company ? ` · ${lead.company}` : ''}</p>
+                                            </td>
+                                            <td className="px-5 py-3">
+                                                <StatusBadge status={{ label: statusLabel(lead.status, options), color: statusColor(lead.status, options) }} />
+                                            </td>
+                                            <td className="px-5 py-3">
+                                                <Badge color={priorityColor(lead.priority, options)}>{lead.priority}</Badge>
+                                            </td>
+                                            <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{lead.assignee?.name || '—'}</td>
+                                            <td className="px-5 py-3 text-slate-500">{lead.next_follow_up_at ? formatDateTime(lead.next_follow_up_at) : '—'}</td>
+                                            <td className="px-5 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setEditingLead(lead);
+                                                        }}
+                                                        className="text-sm font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            if (confirm('Are you sure you want to delete this lead?')) {
+                                                                router.delete(`/leads/${lead.id}`);
+                                                            }
+                                                        }}
+                                                        className="text-sm font-medium text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile card view */}
+                        <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">
+                            {leads.data.map((lead) => (
+                                <div
+                                    key={lead.id}
+                                    className="p-4 space-y-2 active:bg-slate-50 dark:active:bg-slate-800/50"
+                                    onClick={() => router.visit(`/leads/${lead.id}`)}
+                                >
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="min-w-0 flex-1">
+                                            <p className="font-medium text-sm text-slate-900 dark:text-slate-100 truncate">{lead.name}</p>
+                                            <p className="text-xs text-slate-400 truncate">{lead.phone}{lead.company ? ` · ${lead.company}` : ''}</p>
+                                        </div>
+                                        <StatusBadge status={{ label: statusLabel(lead.status, options), color: statusColor(lead.status, options) }} />
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-wrap text-xs">
+                                        <Badge color={priorityColor(lead.priority, options)}>{lead.priority}</Badge>
+                                        {lead.assignee?.name && <span className="text-slate-500">{lead.assignee.name}</span>}
+                                        {lead.next_follow_up_at && <span className="text-slate-400 ml-auto">{formatDateTime(lead.next_follow_up_at)}</span>}
+                                    </div>
+                                    <div className="flex items-center gap-3 pt-1">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); setEditingLead(lead); }}
+                                            className="text-xs font-medium text-indigo-600"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); if (confirm('Delete this lead?')) router.delete(`/leads/${lead.id}`); }}
+                                            className="text-xs font-medium text-red-600"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </Card>
 
@@ -192,7 +233,7 @@ function CreateLeadModal({ open, onClose, options }) {
             }
         >
             <form onSubmit={submit} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Field label="Name *" error={errors.name}>
                         <Input value={data.name} onChange={(e) => setData('name', e.target.value)} />
                     </Field>
@@ -286,7 +327,7 @@ function EditLeadModal({ lead, onClose, options }) {
             }
         >
             <form onSubmit={submit} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Field label="Name *" error={errors.name}>
                         <Input value={data.name} onChange={(e) => setData('name', e.target.value)} />
                     </Field>

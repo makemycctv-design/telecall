@@ -26,12 +26,13 @@ export default function ReportsIndex({ report, category, filters, options }) {
     return (
         <AuthenticatedLayout header="Reports">
             <Head title="Reports" />
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Reports</h1>
                 <Button
                     variant="secondary"
                     as="a"
                     href={`/reports/export?${new URLSearchParams(query()).toString()}`}
+                    className="self-start sm:self-auto"
                 >
                     ⬇ Export CSV
                 </Button>
@@ -55,7 +56,7 @@ export default function ReportsIndex({ report, category, filters, options }) {
 
             {/* Filters */}
             <Card className="mb-4 p-4">
-                <div className="grid gap-3 sm:grid-cols-4">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <Field label="Staff">
                         <Select value={f.staff_id} onChange={(e) => setF({ ...f, staff_id: e.target.value })}>
                             <option value="">All staff</option>

@@ -28,16 +28,16 @@ export default function TelecallerDashboard({ kpis, pipeline, due_tasks, pending
                         ) : (
                             <ul className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {due_tasks.map((task) => (
-                                    <li key={task.id} className="flex items-center gap-3 px-5 py-3">
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{task.title}</p>
-                                            <p className="text-xs text-slate-400">
+                                    <li key={task.id} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-5">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{task.title}</p>
+                                            <p className="text-xs text-slate-400 truncate">
                                                 {task.lead?.name} · {task.due_at ? formatDateTime(task.due_at) : 'No due date'}
                                             </p>
                                         </div>
                                         <Button
                                             variant="secondary"
-                                            className="px-2 py-1 text-xs"
+                                            className="px-2 py-1 text-xs self-start sm:self-center"
                                             onClick={() => router.post(`/tasks/${task.id}/complete`)}
                                         >
                                             Done
@@ -55,8 +55,8 @@ export default function TelecallerDashboard({ kpis, pipeline, due_tasks, pending
                         ) : (
                             <ul className="divide-y divide-slate-100 dark:divide-slate-800">
                                 {pending_callbacks.map((lead) => (
-                                    <li key={lead.id} className="flex items-center gap-3 px-5 py-3">
-                                        <Link href={`/leads/${lead.id}`} className="flex-1 text-sm font-medium text-indigo-600 hover:underline">
+                                    <li key={lead.id} className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-5">
+                                        <Link href={`/leads/${lead.id}`} className="flex-1 min-w-0 text-sm font-medium text-indigo-600 hover:underline truncate">
                                             {lead.name}
                                             <span className="ml-2 text-xs text-slate-400">{lead.phone}</span>
                                         </Link>

@@ -25,12 +25,12 @@ export default function AdminDashboard({ kpis, pipeline, leaderboard, recent_act
                         <CardHeader title="Top performers" subtitle="By conversions" />
                         <ul className="divide-y divide-slate-100 dark:divide-slate-800">
                             {leaderboard.map((s, i) => (
-                                <li key={s.id} className="flex items-center gap-3 px-5 py-3">
-                                    <span className="w-5 text-sm font-semibold text-slate-400">{i + 1}</span>
+                                <li key={s.id} className="flex items-center gap-2 px-4 py-3 sm:gap-3 sm:px-5">
+                                    <span className="w-5 shrink-0 text-sm font-semibold text-slate-400">{i + 1}</span>
                                     <Avatar name={s.name} size="sm" />
-                                    <span className="flex-1 text-sm font-medium text-slate-800 dark:text-slate-200">{s.name}</span>
-                                    <span className="text-sm text-slate-500">{s.converted_count} won</span>
-                                    <span className="text-xs text-slate-400">{s.calls_today} calls</span>
+                                    <span className="flex-1 min-w-0 text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{s.name}</span>
+                                    <span className="shrink-0 text-xs sm:text-sm text-slate-500">{s.converted_count} won</span>
+                                    <span className="hidden sm:inline shrink-0 text-xs text-slate-400">{s.calls_today} calls</span>
                                 </li>
                             ))}
                         </ul>
@@ -40,12 +40,12 @@ export default function AdminDashboard({ kpis, pipeline, leaderboard, recent_act
                         <CardHeader title="Recent activity" />
                         <ul className="divide-y divide-slate-100 dark:divide-slate-800">
                             {recent_activity.map((lead) => (
-                                <li key={lead.id} className="flex items-center gap-3 px-5 py-3">
-                                    <Link href={`/leads/${lead.id}`} className="flex-1 text-sm font-medium text-indigo-600 hover:underline">
+                                <li key={lead.id} className="flex items-center gap-2 px-4 py-3 sm:gap-3 sm:px-5">
+                                    <Link href={`/leads/${lead.id}`} className="flex-1 min-w-0 text-sm font-medium text-indigo-600 hover:underline truncate">
                                         {lead.name}
                                     </Link>
                                     <StatusBadge status={{ label: lead.status, color: 'slate' }} />
-                                    <span className="text-xs text-slate-400">{fromNow(lead.updated_at)}</span>
+                                    <span className="hidden sm:inline shrink-0 text-xs text-slate-400">{fromNow(lead.updated_at)}</span>
                                 </li>
                             ))}
                         </ul>
